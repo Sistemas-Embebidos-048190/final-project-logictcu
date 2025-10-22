@@ -68,6 +68,20 @@ const osThreadAttr_t Comm_Tx_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for TCM_logic */
+osThreadId_t TCM_logicHandle;
+const osThreadAttr_t TCM_logic_attributes = {
+  .name = "TCM_logic",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for TCM */
+osThreadId_t TCMHandle;
+const osThreadAttr_t TCM_attributes = {
+  .name = "TCM",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -77,6 +91,8 @@ const osThreadAttr_t Comm_Tx_attributes = {
 void StartDefaultTask(void *argument);
 void Comm_Rx_Task(void *argument);
 void Comm_Tx_Task(void *argument);
+void TCM_logic_Task(void *argument);
+void TCM_task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -115,6 +131,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Comm_Tx */
   Comm_TxHandle = osThreadNew(Comm_Tx_Task, NULL, &Comm_Tx_attributes);
+
+  /* creation of TCM_logic */
+  TCM_logicHandle = osThreadNew(TCM_logic_Task, NULL, &TCM_logic_attributes);
+
+  /* creation of TCM */
+  TCMHandle = osThreadNew(TCM_task, NULL, &TCM_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -191,6 +213,42 @@ void Comm_Tx_Task(void *argument)
     osDelay(1);
   }
   /* USER CODE END Comm_Tx_Task */
+}
+
+/* USER CODE BEGIN Header_TCM_logic_Task */
+/**
+* @brief Function implementing the TCM_logic thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TCM_logic_Task */
+void TCM_logic_Task(void *argument)
+{
+  /* USER CODE BEGIN TCM_logic_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END TCM_logic_Task */
+}
+
+/* USER CODE BEGIN Header_TCM_task */
+/**
+* @brief Function implementing the TCM thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TCM_task */
+void TCM_task(void *argument)
+{
+  /* USER CODE BEGIN TCM_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END TCM_task */
 }
 
 /* Private application code --------------------------------------------------*/
