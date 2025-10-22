@@ -54,6 +54,20 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for Comm_Rx */
+osThreadId_t Comm_RxHandle;
+const osThreadAttr_t Comm_Rx_attributes = {
+  .name = "Comm_Rx",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for Comm_Tx */
+osThreadId_t Comm_TxHandle;
+const osThreadAttr_t Comm_Tx_attributes = {
+  .name = "Comm_Tx",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +75,8 @@ const osThreadAttr_t defaultTask_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
+void Comm_Rx_Task(void *argument);
+void Comm_Tx_Task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -93,6 +109,12 @@ void MX_FREERTOS_Init(void) {
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of Comm_Rx */
+  Comm_RxHandle = osThreadNew(Comm_Rx_Task, NULL, &Comm_Rx_attributes);
+
+  /* creation of Comm_Tx */
+  Comm_TxHandle = osThreadNew(Comm_Tx_Task, NULL, &Comm_Tx_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -133,6 +155,42 @@ void StartDefaultTask(void *argument)
 	HAL_Delay(1000);
   }
   /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_Comm_Rx_Task */
+/**
+* @brief Function implementing the Comm_Rx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Comm_Rx_Task */
+void Comm_Rx_Task(void *argument)
+{
+  /* USER CODE BEGIN Comm_Rx_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Comm_Rx_Task */
+}
+
+/* USER CODE BEGIN Header_Comm_Tx_Task */
+/**
+* @brief Function implementing the Comm_Tx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Comm_Tx_Task */
+void Comm_Tx_Task(void *argument)
+{
+  /* USER CODE BEGIN Comm_Tx_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Comm_Tx_Task */
 }
 
 /* Private application code --------------------------------------------------*/
