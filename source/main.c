@@ -18,6 +18,10 @@
 #include "board.h"
 #include "app.h"
 
+#include "fsl_gpio.h"
+#include "IoHwAb_gpio.h"
+#include "MCU.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -38,6 +42,8 @@ int main(void)
 {
     /* Init board hardware. */
     BOARD_InitHardware();
+    Init_Clock_Ports();
+
     if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 100, NULL, hello_task_PRIORITY, NULL) !=
         pdPASS)
     {
@@ -55,9 +61,23 @@ int main(void)
  */
 static void hello_task(void *pvParameters)
 {
+    /* Define the init structure for the output LED pin*/
+    gpio_pin_config_t led_config = {
+        kGPIO_DigitalOutput,
+        0,
+    };
+
+    Init_Pin_BreakPedal();
+    Init_Pin_GearPossition();
+    Init_Pin_ShiftSolenoids();
+
+
+    /* Init output LED GPIO. */
+    GPIO_PinInit(BOARD_LED_GPIO, BOARD_LED_GPIO_PIN, &led_config);
+
     for (;;)
     {
-        PRINTF("Hello world.\r\n");
+    	 GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_GPIO_PIN);
         vTaskSuspend(NULL);
     }
 }
