@@ -133,6 +133,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/RTE}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BSW/IoHwAb}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SWC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BSW/COMM}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BSW/MCAL}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.files.1498935554" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.1249797581" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" useByScannerDiscovery="true"/>
@@ -312,7 +314,7 @@
 								<option id="com.crt.advproject.link.gcc.lto.1545399557" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.gcc.lto"/>
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.1143410591" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level"/>
 								<option id="com.crt.advproject.link.manage.1191977518" name="Manage linker script" superClass="com.crt.advproject.link.manage" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.35165242" name="Linker script" superClass="com.crt.advproject.link.script" value="frdmmcxn947_freertos_hello_cm33_core0_TCM_Debug.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.script.35165242" name="Linker script" superClass="com.crt.advproject.link.script" value="frdmmcxn947_project_TCM_Debug.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.scriptdir.1259621272" name="Script path" superClass="com.crt.advproject.link.scriptdir"/>
 								<option id="com.crt.advproject.link.crpenable.345879016" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.flashconfigenable.923847959" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" value="true" valueType="boolean"/>
@@ -345,15 +347,20 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="BSW/COMM"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="BSW/IoHwAb"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="BSW/MCAL"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="utilities"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="RTE"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="SWC"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freertos"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
+						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="utilities"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -657,7 +664,7 @@
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.712316178" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level"/>
 								<option id="com.crt.advproject.link.fpu.1705157467" name="Floating point" superClass="com.crt.advproject.link.fpu" value="com.crt.advproject.link.fpu.fpv5sp.hard" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.manage.986690565" name="Manage linker script" superClass="com.crt.advproject.link.manage" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.284114276" name="Linker script" superClass="com.crt.advproject.link.script" value="frdmmcxn947_freertos_hello_cm33_core0_TCM_Release.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.script.284114276" name="Linker script" superClass="com.crt.advproject.link.script" value="frdmmcxn947_project_TCM_Release.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.scriptdir.1205531123" name="Script path" superClass="com.crt.advproject.link.scriptdir"/>
 								<option id="com.crt.advproject.link.crpenable.897044389" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.flashconfigenable.1909364548" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" value="true" valueType="boolean"/>
