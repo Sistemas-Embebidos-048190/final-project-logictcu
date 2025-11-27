@@ -11,6 +11,7 @@
 #include "task.h"
 #include "queue.h"
 #include "timers.h"
+#include "Rte_os.h"
 
 /* Freescale includes. */
 #include "fsl_device_registers.h"

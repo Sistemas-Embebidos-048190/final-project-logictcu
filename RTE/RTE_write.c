@@ -80,3 +80,4 @@ void Rte_write_g_OUT_CurrentGear(uint8 Gear)
 {
 	Set_g_OUT_CurrentGear(Gear);
 }
+
