@@ -7,9 +7,10 @@
 
 #include "RTE_read.h"
 
+
 void Rte_read_g_HW_LeverPosition(uint8 *LvrPosition)
 {
-	*LvrPosition = Get_g_HW_LvrPosition();
+//	*LvrPosition = Get_g_HW_LvrPosition();
 }
 void Rte_read_g_CAN_EngineRPM(uint16 *RPMS)
 {
@@ -35,10 +36,10 @@ void Rte_read_g_CAN_IgnitionStatus(uint8 *IgnStatus)
 {
 	*IgnStatus = Get_g_CAN_IgnitionStatus();
 }
-void Rte_read_g_HW_LeverPosition(uint8 *LvrPosition)
-{
-	*LvrPosition = Get_g_HW_LeverPosition();
-}
+//void Rte_read_g_HW_LeverPosition(uint8 *LvrPosition)
+//{
+//	*LvrPosition = Get_g_HW_LeverPosition();
+//}
 void Rte_read_g_HW_BrakeSW(uint8 *Brake)
 {
 	*Brake = Get_g_HW_BrakeSW();
