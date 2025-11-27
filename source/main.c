@@ -20,13 +20,17 @@
 
 #include "fsl_gpio.h"
 #include "IoHwAb_gpio.h"
+#include "IoHwAb_adc.h"
+#include "IoHwAb_pwm.h"
 #include "MCU.h"
+
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 /* Task priorities. */
 #define hello_task_PRIORITY (configMAX_PRIORITIES - 1)
+#define TCM_LPADC_BASE  	ADC0
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -38,6 +42,21 @@ static void hello_task(void *pvParameters);
 /*!
  * @brief Application entry point.
  */
+
+void delay(void)
+{
+    volatile uint32_t i = 0;
+    for (i = 0; i < 800000; ++i)
+    {
+        __asm("NOP"); /* delay */
+    }
+}
+
+uint16_t value1 = 0;
+uint32_t triggerMask = (1UL << 0);
+uint32_t pwmVal = 4;
+const uint32_t g_LpadcResultShift = 3U;
+
 int main(void)
 {
     /* Init board hardware. */
@@ -61,23 +80,51 @@ int main(void)
  */
 static void hello_task(void *pvParameters)
 {
-    /* Define the init structure for the output LED pin*/
-    gpio_pin_config_t led_config = {
-        kGPIO_DigitalOutput,
-        0,
-    };
 
     Init_Pin_BreakPedal();
     Init_Pin_GearPossition();
     Init_Pin_ShiftSolenoids();
+    Init_Pin_ShiftLockSolenoid();
+	Init_ADC_Pins();
+    Init_Pin_PWM();
 
+    lpadc_conv_result_t result;
 
-    /* Init output LED GPIO. */
-    GPIO_PinInit(BOARD_LED_GPIO, BOARD_LED_GPIO_PIN, &led_config);
 
     for (;;)
     {
-    	 GPIO_PortToggle(BOARD_LED_GPIO, 1u << BOARD_LED_GPIO_PIN);
-        vTaskSuspend(NULL);
+    	delay();
+
+//        /* Delay at least 100 PWM periods. */
+//        SDK_DelayAtLeastUs((1000000U / APP_DEFAULT_PWM_FREQUENCY) * 100, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
+//
+//        pwmVal = pwmVal + 4;
+//
+//        /* Reset the duty cycle percentage */
+//        if (pwmVal > 100)
+//        {
+//            pwmVal = 4;
+//        }
+//
+//        /* Update duty cycles for all 3 PWM signals */
+//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_SignedCenterAligned, pwmVal);
+//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_1, kPWM_PwmA, kPWM_SignedCenterAligned, (pwmVal >> 1));
+//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_2, kPWM_PwmA, kPWM_SignedCenterAligned, (pwmVal >> 2));
+//
+//        /* Set the load okay bit for all submodules to load registers from their buffer */
+//        PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
+
+/*PRUEBAS ADC*/
+    	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
+
+    	while (!LPADC_GetConvResult(TCM_LPADC_BASE, &result, 0U))
+    	{
+    	}
+    	value1 = ( (result.convValue) >> g_LpadcResultShift  );
+
+/*PRUEBAS GPIOS*/
+//    	GPIO_PortToggle(GPIO5, 1u << LOCK_SOLENOID);
+//   	value1 = GPIO_PinRead(GPIO1,  SECOND_PIN);
+
     }
 }

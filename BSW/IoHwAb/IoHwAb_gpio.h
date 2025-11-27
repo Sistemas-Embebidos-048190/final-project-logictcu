@@ -18,8 +18,8 @@
  * instance specified in app.h or board.h.
  */
 
-#ifndef _IOWHAB_GPIO_H_
-#define _IOWHAB_GPIO_H_
+#ifndef _IOHWAB_GPIO_H_
+#define _IOHWAB_GPIO_H_
 
 
 /* **********************************************************************
@@ -42,7 +42,7 @@
  * @name Brake Pedal Input
  * @{
  */
-#define BREAK_PEDAL_PIN	8U			/**< Brake pedal GPIO pin */
+#define BREAK_PEDAL_PIN	4U			/**< Brake pedal GPIO pin */
 /** @} */
 
 
@@ -52,10 +52,10 @@
  */
 #define PARKING_PIN		(9U)			/**< Gear position: Parking  */
 #define REVERSE_PIN 	(12U)			/**< Gear position: Reverse  */
-#define NEUTRAL_PIN		(13U)			/**< Gear position: Neutral  */
-#define DRIVE_PIN		(14U)			/**< Gear position: Drive    */
-#define FIRST_PIN		(15U)			/**< Gear position: 1st gear */
-#define SECOND_PIN		(16U)			/**< Gear position: 2nd gear */
+#define NEUTRAL_PIN		(5U)			/**< Gear position: Neutral  */
+#define DRIVE_PIN		(0U)			/**< Gear position: Drive    */
+#define FIRST_PIN		(23U)			/**< Gear position: 1st gear */
+#define SECOND_PIN		(13U)			/**< Gear position: 2nd gear */
 /** @} */
 
 /**
@@ -64,8 +64,8 @@
  */
 #define SOLENOID_A_PIN      (17U)  	/**< Solenoid A */
 #define SOLENOID_B_PIN      (22U)  	/**< Solenoid B */
-#define SOLENOID_C_PIN      (23U)  	/**< Solenoid C */
-#define SOLENOID_D_PIN      (0U)   	/**< Solenoid D */
+#define SOLENOID_C_PIN      (15U)  	/**< Solenoid C */
+#define SOLENOID_D_PIN      (14U)   	/**< Solenoid D */
 #define SOLENOID_E_PIN      (4U)  	/**< Solenoid E */
 /** @} */
 
@@ -102,4 +102,4 @@ void Init_Pin_ShiftSolenoids(void);
 void Init_Pin_ShiftLockSolenoid(void);
 
 
-#endif /* _IOWHAB_GPIO_H_ */
+#endif /* _IOHWAB_GPIO_H_ */

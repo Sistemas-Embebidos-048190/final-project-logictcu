@@ -63,7 +63,28 @@ static const port_pin_config_t s_gpioPinConfig = {
     kPORT_UnlockRegister
 };
 
-
+static const port_pin_config_t s_BrakePedal_PinConfig = {
+    /* Internal pull-up/down resistor is disabled */
+	kPORT_PullDown,
+    /* Low internal pull resistor value is selected (not used since pull disabled) */
+    kPORT_LowPullResistor,
+    /* Fast slew rate is configured */
+    kPORT_FastSlewRate,
+    /* Passive input filter is disabled */
+    kPORT_PassiveFilterDisable,
+    /* Open drain output is disabled */
+    kPORT_OpenDrainDisable,
+    /* Low drive strength is configured */
+    kPORT_LowDriveStrength,
+    /* Pin is configured as GPIO */
+	kPORT_MuxAsGpio,
+    /* Digital input enabled */
+    kPORT_InputBufferEnable,
+    /* Digital input is not inverted */
+    kPORT_InputNormal,
+    /* Pin Control Register fields [15:0] are not locked */
+    kPORT_UnlockRegister
+};
 
 /* **********************************************************************
  * Functions
@@ -82,14 +103,14 @@ void Init_Pin_BreakPedal (void)
 {
     /*PIN BREAK PEDAL*/
 
-	/* PORT1_PIN8 is configured as PIO0_10 */
-    PORT_SetPinConfig(PORT1, BREAK_PEDAL_PIN, &s_gpioPinConfig);
+	/* PORT3_PIN4 is configured as input */
+    PORT_SetPinConfig(PORT3, BREAK_PEDAL_PIN, &s_BrakePedal_PinConfig);
 
     gpio_pin_config_t Pin_BreakPedal_config = {
     	kGPIO_DigitalInput,
 		GPIO_LOGIC_LEVEL_LOW,
     };
-    GPIO_PinInit(GPIO1, BREAK_PEDAL_PIN, &Pin_BreakPedal_config);
+    GPIO_PinInit(GPIO3, BREAK_PEDAL_PIN, &Pin_BreakPedal_config);
 }
 
 /**
@@ -110,8 +131,8 @@ void Init_Pin_GearPossition(void)
     /* --- PORT mux configuration for gear position pins --- */
     PORT_SetPinConfig(PORT1, PARKING_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, REVERSE_PIN, &s_gpioPinConfig);
-    PORT_SetPinConfig(PORT1, NEUTRAL_PIN, &s_gpioPinConfig);
-    PORT_SetPinConfig(PORT1, DRIVE_PIN, &s_gpioPinConfig);
+    PORT_SetPinConfig(PORT3, NEUTRAL_PIN, &s_gpioPinConfig);
+    PORT_SetPinConfig(PORT2, DRIVE_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, FIRST_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, SECOND_PIN, &s_gpioPinConfig);
 
@@ -133,16 +154,16 @@ void Init_Pin_GearPossition(void)
         kGPIO_DigitalInput,
         GPIO_LOGIC_LEVEL_LOW,
     };
-    GPIO_PinInit(GPIO1, NEUTRAL_PIN, &neutralConfig);
+    GPIO_PinInit(GPIO3, NEUTRAL_PIN, &neutralConfig);
 
     gpio_pin_config_t driveConfig = {
         kGPIO_DigitalInput,
         GPIO_LOGIC_LEVEL_LOW,
     };
-    GPIO_PinInit(GPIO1, DRIVE_PIN, &driveConfig);
+    GPIO_PinInit(GPIO2, DRIVE_PIN, &driveConfig);
 
     gpio_pin_config_t firstConfig = {
-        kGPIO_DigitalInput,
+       kGPIO_DigitalInput,
         GPIO_LOGIC_LEVEL_LOW,
     };
     GPIO_PinInit(GPIO1, FIRST_PIN, &firstConfig);
@@ -173,7 +194,7 @@ void Init_Pin_ShiftSolenoids(void)
     PORT_SetPinConfig(PORT1, SOLENOID_A_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, SOLENOID_B_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, SOLENOID_C_PIN, &s_gpioPinConfig);
-    PORT_SetPinConfig(PORT2, SOLENOID_D_PIN, &s_gpioPinConfig);
+    PORT_SetPinConfig(PORT1, SOLENOID_D_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT4, SOLENOID_E_PIN, &s_gpioPinConfig);
 
     /* --- GPIO configuration as digital outputs --- */
@@ -200,7 +221,7 @@ void Init_Pin_ShiftSolenoids(void)
         kGPIO_DigitalOutput,
         GPIO_LOGIC_LEVEL_LOW,
     };
-    GPIO_PinInit(GPIO2, SOLENOID_D_PIN, &solenoidDConfig);
+    GPIO_PinInit(GPIO1, SOLENOID_D_PIN, &solenoidDConfig);
 
     gpio_pin_config_t solenoidEConfig = {
         kGPIO_DigitalOutput,
