@@ -8,6 +8,11 @@
 #ifndef RTE_OS_H_
 #define RTE_OS_H_
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
+
 void Rte_task_Init();
 static void Rte_task(void *pvParameters);
 static void Rte_Task_logic(void *pvParameters);
