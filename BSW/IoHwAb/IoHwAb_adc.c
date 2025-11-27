@@ -1,23 +1,29 @@
 /*
+ * @file    IoHwAb_adc.c
+ * @brief   LPADC initialization and raw acquisition for TCM sensors.
  *
+ * This module belongs to the IoHwAb (I/O Hardware Abstraction) layer and is
+ * responsible for configuring and using the LPADC instances to read:
+ *  - Output speed sensor
+ *  - Transmission fluid temperature sensor
+ *  - Turbine speed sensor
+ *
+ * It configures:
+ *  - Pin mux for ADC channels
+ *  - Clocks for ADC0 / ADC1
+ *  - VREF module
+ *  - LPADC common configuration
+ *  - Conversion commands and software triggers for each signal
  */
 
+/* **********************************************************************
+ * Includes
+ * *********************************************************************/
 #include "IoHwAb_adc.h"
 
-#define TCM_LPADC0_BASE  	ADC0
-#define TCM_LPADC1_BASE		ADC1
-#define DEMO_VREF_BASE 		VREF0
-
-// IDs de comandos LPADC (1–15 válidos)
-#define TCM_LPADC_CMDID_OUTPUT      1U   // P0_14  Output_Speed_Sensor
-#define TCM_LPADC_CMDID_FLUID       2U   // P0_22  Fluid_Trans_Temperature
-#define TCM_LPADC_CMDID_TURBINE     3U   // P1_10  Turbine_Speed_Sensor
-
-// Triggers de software (0–3 típicamente)
-#define TCM_LPADC_TRIG_OUTPUT       0U
-#define TCM_LPADC_TRIG_FLUID        1U
-#define TCM_LPADC_TRIG_TURBINE      2U
-
+/* **********************************************************************
+ * Definitions
+ * *********************************************************************/
 #define TCM_LPADC_RESULT_MASK   (0xFFFFU)
 #define TCM_LPADC_RESULTSHIFT   (0U)
 
@@ -26,8 +32,21 @@
 #define DEMO_LPADC_OFFSET_VALUE_A        0x10U
 #define DEMO_LPADC_OFFSET_VALUE_B        0x10U
 
-#define DEMO_SPC_BASE           SPC0
+/* **********************************************************************
+ * Static pin configuration
+ * *********************************************************************/
 
+/**
+ * @brief Common PORT configuration for ADC input pins.
+ *
+ *  - No pull-up/down
+ *  - Fast slew rate
+ *  - No passive filter
+ *  - Push-pull (open drain disabled)
+ *  - Low drive strength
+ *  - Pin muxed as ALT0 (ADC function)
+ *  - Input buffer disabled (handled by analog block)
+ */
 static const port_pin_config_t adc_PinConfig = {
     /* Internal pull-up/down resistor is disabled */
     kPORT_PullDisable,
@@ -51,87 +70,120 @@ static const port_pin_config_t adc_PinConfig = {
     kPORT_UnlockRegister
 };
 
+/* **********************************************************************
+ * Global functions
+ * *********************************************************************/
+
+/**
+ * @brief Initializes ADC pins, clocks, VREF and LPADC commands/triggers.
+ *
+ * Configures:
+ *  - Pins:
+ *      - ADC_OUTPUT_SPEED_PIN   (Output speed sensor)
+ *      - ADC_TEMPERATURE_PIN    (Fluid temperature sensor)
+ *      - ADC_TRUBINE_SPEED_PIN  (Turbine speed sensor)
+ *  - Clocks for ADC0 and ADC1
+ *  - VREF module (bias for LPADC)
+ *  - LPADC0 and LPADC1 common configuration and calibration
+ *  - Conversion commands and software triggers for each sensor
+ */
 void Init_ADC_Pins(void)
 {
 
+    /* ------------------------------------------------------------------
+     * Configure pin mux for ADC inputs
+     * ------------------------------------------------------------------ */
     PORT_SetPinConfig(PORT0, ADC_TEMPERATURE_PIN, &adc_PinConfig);
     PORT_SetPinConfig(PORT0, ADC_OUTPUT_SPEED_PIN, &adc_PinConfig);
-    PORT_SetPinConfig(PORT1, ADC_TRUBINE_SPEED_PIN, &adc_PinConfig);
+    PORT_SetPinConfig(PORT1, ADC_TURBINE_SPEED_PIN, &adc_PinConfig);
 
-    vref_config_t vrefConfig;
-
-    /* 1) Configurar el reloj funcional de ADC0 */
-    CLOCK_SetClkDiv(kCLOCK_DivAdc0Clk, 1U);
+    /* ------------------------------------------------------------------
+	 *  Configure functional clocks for ADC0 and ADC1
+	 * ------------------------------------------------------------------ */
+    CLOCK_SetClkDiv(kCLOCK_DivAdc0Clk, TCM_LPADC_CLOCK_DIVIDER);
     CLOCK_AttachClk(kFRO_HF_to_ADC0);
 
-    /* 1) Configurar el reloj funcional de ADC1 */
-    CLOCK_SetClkDiv(kCLOCK_DivAdc1Clk, 1U);
+    CLOCK_SetClkDiv(kCLOCK_DivAdc1Clk, TCM_LPADC_CLOCK_DIVIDER);
     CLOCK_AttachClk(kFRO_HF_to_ADC1);
 
-    /* enable VREF */
+    /* ------------------------------------------------------------------
+	 * Enable and configure VREF (bias for LPADC)
+	 * ------------------------------------------------------------------ */
     SPC_EnableActiveModeAnalogModules(DEMO_SPC_BASE, kSPC_controlVref);
 
+    vref_config_t vrefConfig;
     VREF_GetDefaultConfig(&vrefConfig);
     vrefConfig.bufferMode = kVREF_ModeBandgapOnly;
     /* Initialize VREF module, the VREF module is only used to supply the bias current for LPADC. */
     VREF_Init(DEMO_VREF_BASE, &vrefConfig);
 
+    /* ------------------------------------------------------------------
+	 * Configure LPADC common settings and calibrate
+	 * ------------------------------------------------------------------ */
     lpadc_config_t              lpadcConfig;
     lpadc_conv_command_config_t cmdConfig;
     lpadc_conv_trigger_config_t trigConfig;
 
-    /* Config básica del LPADC */
     LPADC_GetDefaultConfig(&lpadcConfig);
     lpadcConfig.powerLevelMode = kLPADC_PowerLevelAlt4;
 	lpadcConfig.enableAnalogPreliminary = true;
-	lpadcConfig.referenceVoltageSource = 2U;
-
+	lpadcConfig.referenceVoltageSource = DEMO_LPADC_VREF_SOURCE;
 	lpadcConfig.conversionAverageMode = kLPADC_ConversionAverage128;
 
+	/* Initialize and calibrate ADC0 */
 	LPADC_Init(TCM_LPADC0_BASE, &lpadcConfig);
 	LPADC_DoOffsetCalibration(TCM_LPADC0_BASE); /* Request offset calibration, automatic update OFSTRIM register. */
 	LPADC_DoAutoCalibration(TCM_LPADC0_BASE);
 
+	/* Initialize and calibrate ADC1 */
 	LPADC_Init(TCM_LPADC1_BASE, &lpadcConfig);
 	LPADC_DoOffsetCalibration(TCM_LPADC1_BASE); /* Request offset calibration, automatic update OFSTRIM register. */
 	LPADC_DoAutoCalibration(TCM_LPADC1_BASE);
 
+	/* ------------------------------------------------------------------
+	 * 5) Configure conversion commands for each sensor
+	 * ------------------------------------------------------------------ */
+
     /* OUTPUT_SPEED_SENSOR  (P0_14 = ADC0_B14 → canal 14, lado B) */
-    cmdConfig.channelNumber     = 14U;
+	LPADC_GetDefaultConvCommandConfig(&cmdConfig);
+
+    cmdConfig.channelNumber     = TCM_LPADC_CHANNEL_OUTPUT;
     cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideB;
     LPADC_SetConvCommandConfig(TCM_LPADC0_BASE, TCM_LPADC_CMDID_OUTPUT, &cmdConfig);
 
     /* ADC_TEMPERATURE_PIN  (P0_22 = ADC0_A14 → canal 14, lado A) */
-    cmdConfig.channelNumber     = 14U;
+    LPADC_GetDefaultConvCommandConfig(&cmdConfig);
+
+    cmdConfig.channelNumber     = TCM_LPADC_CHANNEL_FLUID;
     cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideA;
     LPADC_SetConvCommandConfig(TCM_LPADC0_BASE, TCM_LPADC_CMDID_FLUID, &cmdConfig);
 
     /* ADC_TRUBINE_SPEED_PIN  (P1_10 = ADC1_A10 → canal 10, lado A) */
-    cmdConfig.channelNumber     = 10U;
+    LPADC_GetDefaultConvCommandConfig(&cmdConfig);
+
+    cmdConfig.channelNumber     = TCM_LPADC_CHANNEL_TURBINE;
     cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideA;
     LPADC_SetConvCommandConfig(TCM_LPADC1_BASE, TCM_LPADC_CMDID_TURBINE, &cmdConfig);
 
-    /* Triggers de software para cada comando */
+    /* ------------------------------------------------------------------
+	 * Configure software triggers for each command
+	 * ------------------------------------------------------------------ */
+    /* OUTPUT and FLUID: software triggers on LPADC0 */
     LPADC_GetDefaultConvTriggerConfig(&trigConfig);
+    trigConfig.enableHardwareTrigger = false;
+
     trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
-    trigConfig.enableHardwareTrigger = false;  // puro software trigger
-
-//    /* Triggers de software para cada comando */
-//    LPADC_GetDefaultConvTriggerConfig(&trigConfig);
-//    trigConfig.targetCommandId = TCM_LPADC_CMDID_FLUID;
-//    trigConfig.enableHardwareTrigger = false;  // puro software trigger
-//
-//    /* Triggers de software para cada comando */
-//    LPADC_GetDefaultConvTriggerConfig(&trigConfig);
-//    trigConfig.targetCommandId = TCM_LPADC_CMDID_TURBINE;
-//    trigConfig.enableHardwareTrigger = false;  // puro software trigger
-
-    //trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
     LPADC_SetConvTriggerConfig(TCM_LPADC0_BASE, TCM_LPADC_TRIG_OUTPUT, &trigConfig);
-//    LPADC_SetConvTriggerConfig(TCM_LPADC0_BASE, TCM_LPADC_TRIG_FLUID, &trigConfig);
-//    LPADC_SetConvTriggerConfig(TCM_LPADC1_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
 
-    lpadc_conv_result_t mLpadcResultConfigStruct;
+    trigConfig.targetCommandId = TCM_LPADC_CMDID_FLUID;
+    LPADC_SetConvTriggerConfig(TCM_LPADC0_BASE, TCM_LPADC_TRIG_FLUID, &trigConfig);
+
+    /* TURBINE: software trigger on LPADC1 */
+    LPADC_GetDefaultConvTriggerConfig(&trigConfig);
+    trigConfig.enableHardwareTrigger = false;  // puro software trigger
+    trigConfig.targetCommandId = TCM_LPADC_CMDID_TURBINE;
+    LPADC_SetConvTriggerConfig(TCM_LPADC1_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
+
 }
 
 
