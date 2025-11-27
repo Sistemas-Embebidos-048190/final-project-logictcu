@@ -17,6 +17,7 @@
 #define DEMO_SPC_BASE           SPC0
 #define DEMO_LPADC_BASE         ADC0
 #define DEMO_LPADC_USER_CHANNEL 2U
+
 /*${macro:end}*/
 
 /*******************************************************************************
