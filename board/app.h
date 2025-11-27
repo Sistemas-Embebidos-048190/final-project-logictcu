@@ -10,7 +10,13 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+
 /*${macro:start}*/
+#define BOARD_LED_GPIO     BOARD_LED_RED_GPIO
+#define BOARD_LED_GPIO_PIN BOARD_LED_RED_GPIO_PIN
+#define DEMO_SPC_BASE           SPC0
+#define DEMO_LPADC_BASE         ADC0
+#define DEMO_LPADC_USER_CHANNEL 2U
 
 /*${macro:end}*/
 
