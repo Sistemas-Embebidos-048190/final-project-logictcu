@@ -11,6 +11,7 @@
 #include "task.h"
 #include "queue.h"
 #include "timers.h"
+#include "Rte_os.h"
 
 /* Freescale includes. */
 #include "fsl_device_registers.h"
@@ -36,7 +37,7 @@
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-static void hello_task(void *pvParameters);
+
 
 /*******************************************************************************
  * Code
@@ -45,23 +46,8 @@ static void hello_task(void *pvParameters);
  * @brief Application entry point.
  */
 
-void delay(void)
-{
-    volatile uint32_t i = 0;
-    for (i = 0; i < 800000; ++i)
-    {
-        __asm("NOP"); /* delay */
-    }
-}
 
-uint16_t value1 = 0;
-uint32_t triggerMask1 = (1UL << TCM_LPADC_TRIG_OUTPUT);
-uint16_t value2 = 0;
-uint32_t triggerMask2 = (1UL << TCM_LPADC_TRIG_FLUID);
-uint16_t value3 = 0;
-uint32_t triggerMask3 = (1UL << TCM_LPADC_TRIG_TURBINE);
-uint32_t pwmVal = 4;
-const uint32_t g_LpadcResultShift = 3U;
+
 
 int main(void)
 {
@@ -69,88 +55,7 @@ int main(void)
     BOARD_InitHardware();
     Init_Clock_Ports();
 
-    if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 100, NULL, hello_task_PRIORITY, NULL) !=
-        pdPASS)
-    {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-            ;
-    }
-    vTaskStartScheduler();
-    for (;;)
-        ;
+    Rte_task_Init();
 }
 
-/*!
- * @brief Task responsible for printing of "Hello world." message.
- */
-static void hello_task(void *pvParameters)
-{
 
-    Init_Pin_BreakPedal();
-    Init_Pin_GearPossition();
-    Init_Pin_ShiftSolenoids();
-    Init_Pin_ShiftLockSolenoid();
-	Init_ADC_Pins();
-    Init_Pin_PWM();
-
-    lpadc_conv_result_t result1;
-    lpadc_conv_result_t result2;
-    lpadc_conv_result_t result3;
-
-
-    for (;;)
-    {
-    	delay();
-
-//        /* Delay at least 100 PWM periods. */
-//        SDK_DelayAtLeastUs((1000000U / APP_DEFAULT_PWM_FREQUENCY) * 100, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
-//
-//        pwmVal = pwmVal + 4;
-//
-//        /* Reset the duty cycle percentage */
-//        if (pwmVal > 100)
-//        {
-//            pwmVal = 4;
-//        }
-//
-//        /* Update duty cycles for all 3 PWM signals */
-//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_SignedCenterAligned, pwmVal);
-//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_1, kPWM_PwmA, kPWM_SignedCenterAligned, (pwmVal >> 1));
-//        PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_2, kPWM_PwmA, kPWM_SignedCenterAligned, (pwmVal >> 2));
-//
-//        /* Set the load okay bit for all submodules to load registers from their buffer */
-//        PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
-
-/*PRUEBAS ADC*/
-    	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask1);
-    	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask2);
-    	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask3);
-
-//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result1, 0U))
-//    	{
-//    	}
-//    	value1 = ( (result1.convValue) >> g_LpadcResultShift  );
-//
-//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result2, 0U))
-//    	{
-//    	}
-//    	value2 = ( (result2.convValue) >> g_LpadcResultShift  );
-//
-//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result3, 0U))
-//    	{
-//    	}
-//    	value3 = ( (result3.convValue) >> g_LpadcResultShift  );
-//    	TCM_Read_TurbineSpeedSensorRaw();
-//    	TCM_Read_FluidTempSensorRaw();
-//    	TCM_Read_OutputSpeedSensorRaw();
-//    	IoHwAb_GetTurbineSpeed_RPM_u16();
-    	TCM_read_gear_level_possition();
-    	TCM_read_pedal_possition();
-
-/*PRUEBAS GPIOS*/
-//    	GPIO_PortToggle(GPIO5, 1u << LOCK_SOLENOID);
-//   	value1 = GPIO_PinRead(GPIO1,  SECOND_PIN);
-
-    }
-}
