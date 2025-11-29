@@ -39,9 +39,9 @@ void Set_g_HW_BrakeSW(uint8 Brake)
 {
 	g_HW_BrakeSW = Brake;
 }
-void Set_g_HW_InputSpeed(uint16 InSpeed)
+void Set_g_HW_TurbineSpeed(uint16 TbSpeed)
 {
-	g_HW_InputSpeed = InSpeed;
+	g_HW_TurbineSpeed = TbSpeed;
 }
 void Set_g_HW_OutputSpeed(uint16 OutSpeed)
 {

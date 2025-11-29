@@ -18,7 +18,7 @@ uint8 g_CAN_IgnitionStatus = 0;		//Estado de la Ignición
 // Señales de Hardwired (entradas a la TCU)
 uint8 g_HW_LeverPosition = 0;  		//Sensor de posición de palanca de velocidad
 uint8 g_HW_BrakeSW = 0;				//Sensor de freno
-uint16 g_HW_InputSpeed	= 0;		//Sensor de velocidad de entrada del eje
+uint16 g_HW_TurbineSpeed	= 0;	//Sensor de velocidad de entrada del eje
 uint16 g_HW_OutputSpeed = 0;		//Sensor de velocidad de salida del eje
 sint8 g_HW_TransmissionTEMP = 0;    //Sensor de Temperatura
 

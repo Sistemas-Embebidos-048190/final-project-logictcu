@@ -23,6 +23,14 @@
 #include "board.h"
 #include "app.h"
 #include "fsl_pwm.h"
+#include "fsl_port.h"
+#include "fsl_common.h"
+#include "pin_mux.h"
+#include "global_signals.h"
+#include "RTE_write.h"
+#include "RTE_read.h"
+
+
 
 /* **********************************************************************
  * Pin Definitions
@@ -82,5 +90,7 @@
  * *********************************************************************/
 static void PWM_DRV_Init3PhPwm(void);
 void Init_Pin_PWM(void);
+void TCM_set_line_pressure(void);
+void TCM_set_TCC_control(void);
 
 #endif /* _IOHWAB_PWM_H_ */

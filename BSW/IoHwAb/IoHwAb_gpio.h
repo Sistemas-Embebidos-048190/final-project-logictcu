@@ -32,6 +32,9 @@
 #include "board.h"
 #include "fsl_common.h"
 #include "pin_mux.h"
+#include "global_signals.h"
+#include "RTE_write.h"
+#include "RTE_read.h"
 
 
 /* **********************************************************************
@@ -101,5 +104,9 @@ void Init_Pin_ShiftSolenoids(void);
  */
 void Init_Pin_ShiftLockSolenoid(void);
 
+gear_level_possition TCM_read_gear_level_possition(void);
+pedal_possition TCM_read_pedal_possition(void);
+void TCM_set_shift_solenoids(void);
+void TCM_set_ShiftLock_soenoid (void);
 
 #endif /* _IOHWAB_GPIO_H_ */

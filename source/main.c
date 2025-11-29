@@ -55,11 +55,11 @@ void delay(void)
 }
 
 uint16_t value1 = 0;
-uint32_t triggerMask1 = (1UL << 0);
+uint32_t triggerMask1 = (1UL << TCM_LPADC_TRIG_OUTPUT);
 uint16_t value2 = 0;
-uint32_t triggerMask2 = (1UL << 1);
+uint32_t triggerMask2 = (1UL << TCM_LPADC_TRIG_FLUID);
 uint16_t value3 = 0;
-uint32_t triggerMask3 = (1UL << 2);
+uint32_t triggerMask3 = (1UL << TCM_LPADC_TRIG_TURBINE);
 uint32_t pwmVal = 4;
 const uint32_t g_LpadcResultShift = 3U;
 
@@ -125,22 +125,28 @@ static void hello_task(void *pvParameters)
 /*PRUEBAS ADC*/
     	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask1);
     	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask2);
-    	LPADC_DoSoftwareTrigger(TCM_LPADC1_BASE, triggerMask3);
+    	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask3);
 
-    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result1, 0U))
-    	{
-    	}
-    	value1 = ( (result1.convValue) >> g_LpadcResultShift  );
-
-    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result2, 0U))
-    	{
-    	}
-    	value2 = ( (result2.convValue) >> g_LpadcResultShift  );
-
-    	while (!LPADC_GetConvResult(TCM_LPADC1_BASE, &result3, 0U))
-    	{
-    	}
-    	value3 = ( (result3.convValue) >> g_LpadcResultShift  );
+//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result1, 0U))
+//    	{
+//    	}
+//    	value1 = ( (result1.convValue) >> g_LpadcResultShift  );
+//
+//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result2, 0U))
+//    	{
+//    	}
+//    	value2 = ( (result2.convValue) >> g_LpadcResultShift  );
+//
+//    	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result3, 0U))
+//    	{
+//    	}
+//    	value3 = ( (result3.convValue) >> g_LpadcResultShift  );
+//    	TCM_Read_TurbineSpeedSensorRaw();
+//    	TCM_Read_FluidTempSensorRaw();
+//    	TCM_Read_OutputSpeedSensorRaw();
+//    	IoHwAb_GetTurbineSpeed_RPM_u16();
+    	TCM_read_gear_level_possition();
+    	TCM_read_pedal_possition();
 
 /*PRUEBAS GPIOS*/
 //    	GPIO_PortToggle(GPIO5, 1u << LOCK_SOLENOID);

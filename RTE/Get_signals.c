@@ -39,9 +39,9 @@ uint8 Get_g_HW_BrakeSW(void)
 {
 	return g_HW_BrakeSW;
 }
-uint16 Get_g_HW_InputSpeed(void)
+uint16 Get_g_HW_TurbineSpeed(void)
 {
-	return g_HW_InputSpeed;
+	return g_HW_TurbineSpeed;
 }
 uint16 Get_g_HW_OutputSpeed(void)
 {

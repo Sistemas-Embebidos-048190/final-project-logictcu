@@ -17,10 +17,6 @@
  */
 
 #include "IoHwAb_pwm.h"
-#include "fsl_common.h"
-#include "fsl_port.h"
-#include "pin_mux.h"
-#include "fsl_pwm.h"
 
 /* **********************************************************************
  * Local configuration constants
@@ -35,8 +31,8 @@
 /**
  * @brief Default duty cycle (in percent) for initial PWM setup.
  */
-#define IOHWAB_PWMA_DEFAULT_DUTY_PERCENT  (80U)
-#define IOHWAB_PWMB_DEFAULT_DUTY_PERCENT  (80U)
+#define IOHWAB_PWMA_DEFAULT_DUTY_PERCENT  (0U)
+#define IOHWAB_PWMB_DEFAULT_DUTY_PERCENT  (0U)
 
 /**
  * @brief Number of channels that will be used for PWM
@@ -238,4 +234,35 @@ void Init_Pin_PWM(void)
 
     /* Start the PWM generation from Submodules 0, 1 and 2 */
     PWM_StartTimer(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2);
+}
+
+
+void TCM_set_line_pressure(void)
+{
+	uint8 Duty_pressure = 0;
+
+	Rte_read_g_OUT_LinePressure_Control (&Duty_pressure);
+
+	if (Duty_pressure > 100)
+	{
+		Duty_pressure = 100;
+	}
+
+	PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_SignedCenterAligned, Duty_pressure);
+	PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
+}
+
+void TCM_set_TCC_control(void)
+{
+	uint8 Duty_TCC = 0;
+
+	Rte_read_g_OUT_LinePressure_Control (&Duty_TCC);
+
+	if (Duty_TCC > 100)
+	{
+		Duty_TCC = 100;
+	}
+
+	PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_1, kPWM_PwmA, kPWM_SignedCenterAligned, (Duty_TCC >> 1));
+	PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
 }

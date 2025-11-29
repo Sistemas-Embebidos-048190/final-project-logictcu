@@ -95,7 +95,7 @@ void Init_ADC_Pins(void)
      * ------------------------------------------------------------------ */
     PORT_SetPinConfig(PORT0, ADC_TEMPERATURE_PIN, &adc_PinConfig);
     PORT_SetPinConfig(PORT0, ADC_OUTPUT_SPEED_PIN, &adc_PinConfig);
-    PORT_SetPinConfig(PORT1, ADC_TURBINE_SPEED_PIN, &adc_PinConfig);
+    PORT_SetPinConfig(PORT0, ADC_TURBINE_SPEED_PIN, &adc_PinConfig);
 
     /* ------------------------------------------------------------------
 	 *  Configure functional clocks for ADC0 and ADC1
@@ -103,8 +103,8 @@ void Init_ADC_Pins(void)
     CLOCK_SetClkDiv(kCLOCK_DivAdc0Clk, TCM_LPADC_CLOCK_DIVIDER);
     CLOCK_AttachClk(kFRO_HF_to_ADC0);
 
-    CLOCK_SetClkDiv(kCLOCK_DivAdc1Clk, TCM_LPADC_CLOCK_DIVIDER);
-    CLOCK_AttachClk(kFRO_HF_to_ADC1);
+//    CLOCK_SetClkDiv(kCLOCK_DivAdc1Clk, TCM_LPADC_CLOCK_DIVIDER);
+//    CLOCK_AttachClk(kFRO_HF_to_ADC1);
 
     /* ------------------------------------------------------------------
 	 * Enable and configure VREF (bias for LPADC)
@@ -127,7 +127,7 @@ void Init_ADC_Pins(void)
     LPADC_GetDefaultConfig(&lpadcConfig);
     lpadcConfig.powerLevelMode = kLPADC_PowerLevelAlt4;
 	lpadcConfig.enableAnalogPreliminary = true;
-	lpadcConfig.referenceVoltageSource = DEMO_LPADC_VREF_SOURCE;
+	lpadcConfig.referenceVoltageSource = 2U;
 	lpadcConfig.conversionAverageMode = kLPADC_ConversionAverage128;
 
 	/* Initialize and calibrate ADC0 */
@@ -136,9 +136,9 @@ void Init_ADC_Pins(void)
 	LPADC_DoAutoCalibration(TCM_LPADC0_BASE);
 
 	/* Initialize and calibrate ADC1 */
-	LPADC_Init(TCM_LPADC1_BASE, &lpadcConfig);
-	LPADC_DoOffsetCalibration(TCM_LPADC1_BASE); /* Request offset calibration, automatic update OFSTRIM register. */
-	LPADC_DoAutoCalibration(TCM_LPADC1_BASE);
+//	LPADC_Init(TCM_LPADC1_BASE, &lpadcConfig);
+//	LPADC_DoOffsetCalibration(TCM_LPADC1_BASE); /* Request offset calibration, automatic update OFSTRIM register. */
+//	LPADC_DoAutoCalibration(TCM_LPADC1_BASE);
 
 	/* ------------------------------------------------------------------
 	 * 5) Configure conversion commands for each sensor
@@ -152,25 +152,24 @@ void Init_ADC_Pins(void)
     LPADC_SetConvCommandConfig(TCM_LPADC0_BASE, TCM_LPADC_CMDID_OUTPUT, &cmdConfig);
 
     /* ADC_TEMPERATURE_PIN  (P0_22 = ADC0_A14 → canal 14, lado A) */
-    LPADC_GetDefaultConvCommandConfig(&cmdConfig);
+    //LPADC_GetDefaultConvCommandConfig(&cmdConfig);
 
     cmdConfig.channelNumber     = TCM_LPADC_CHANNEL_FLUID;
     cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideA;
     LPADC_SetConvCommandConfig(TCM_LPADC0_BASE, TCM_LPADC_CMDID_FLUID, &cmdConfig);
 
     /* ADC_TRUBINE_SPEED_PIN  (P1_10 = ADC1_A10 → canal 10, lado A) */
-    LPADC_GetDefaultConvCommandConfig(&cmdConfig);
+    //LPADC_GetDefaultConvCommandConfig(&cmdConfig);
 
     cmdConfig.channelNumber     = TCM_LPADC_CHANNEL_TURBINE;
-    cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideA;
-    LPADC_SetConvCommandConfig(TCM_LPADC1_BASE, TCM_LPADC_CMDID_TURBINE, &cmdConfig);
+    cmdConfig.sampleChannelMode = kLPADC_SampleChannelSingleEndSideB;
+    LPADC_SetConvCommandConfig(TCM_LPADC0_BASE, TCM_LPADC_CMDID_TURBINE, &cmdConfig);
 
     /* ------------------------------------------------------------------
 	 * Configure software triggers for each command
 	 * ------------------------------------------------------------------ */
     /* OUTPUT and FLUID: software triggers on LPADC0 */
     LPADC_GetDefaultConvTriggerConfig(&trigConfig);
-    trigConfig.enableHardwareTrigger = false;
 
     trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
     LPADC_SetConvTriggerConfig(TCM_LPADC0_BASE, TCM_LPADC_TRIG_OUTPUT, &trigConfig);
@@ -180,34 +179,69 @@ void Init_ADC_Pins(void)
 
     /* TURBINE: software trigger on LPADC1 */
     LPADC_GetDefaultConvTriggerConfig(&trigConfig);
-    trigConfig.enableHardwareTrigger = false;  // puro software trigger
+
+
     trigConfig.targetCommandId = TCM_LPADC_CMDID_TURBINE;
-    LPADC_SetConvTriggerConfig(TCM_LPADC1_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
+    LPADC_SetConvTriggerConfig(TCM_LPADC0_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
 
 }
 
 
 void TCM_Read_OutputSpeedSensorRaw(void)
 {
-//	lpadc_conv_result_t result;
-//	uint32_t triggerMask = (1UL << 0);
-//	const uint32_t g_LpadcResultShift = 3U;
-//
-//	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
-//
-//	while (!LPADC_GetConvResult(TCM_LPADC_BASE, &result, 0U))
-//	{
-//	}
-//	Write_TCM_OutputSpeed_OSS( (result.convValue) >> g_LpadcResultShift  );
-}
+	lpadc_conv_result_t result;
+	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_OUTPUT);
+	const uint32_t g_LpadcResultShift = 3U;
 
+	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask);
+
+	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result, 0U))
+	{
+	}
+
+	uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * 7000U;   // evitar overflow
+	uint16 rpm  = (uint16)(temp / 4095U);
+
+	Rte_write_g_HW_OutputSpeed( rpm );
+
+}
 
 void TCM_Read_FluidTempSensorRaw(void)
 {
-//	Write_TCM_FluidTemp_TFT( TCM_LPADC_ReadByTrigger(TCM_LPADC_TRIG_FLUID) );
+	lpadc_conv_result_t result;
+	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_FLUID);
+	const uint32_t g_LpadcResultShift = 3U;
+
+	LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, triggerMask);
+
+	while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result, 0U))
+	{
+	}
+
+	sint32 temp = (sint32)((result.convValue) >> g_LpadcResultShift) * 190;  // span = 190 °C
+	temp /= 4095;                        // ahora está en [0, 190]
+	temp += -40;                         // desplazar a [-40, 150]
+
+	Rte_write_g_HW_TransmissionTEMP( temp );
 }
 
 void TCM_Read_TurbineSpeedSensorRaw(void)
 {
-//	Write_TCM_TurbineSpeed_TSS (TCM_LPADC_ReadByTrigger(TCM_LPADC_TRIG_TURBINE) );
+		lpadc_conv_result_t result;
+		uint16 ADC_value = 0;
+		uint32_t Turbine_triggerMask = (1UL << TCM_LPADC_TRIG_TURBINE);
+		const uint32_t g_LpadcResultShift = 3U;
+
+		LPADC_DoSoftwareTrigger(TCM_LPADC0_BASE, Turbine_triggerMask);
+
+		while (!LPADC_GetConvResult(TCM_LPADC0_BASE, &result, 0U))
+		{
+		}
+		ADC_value = ( (result.convValue) >> g_LpadcResultShift) * 8000U;
+		uint16 rpm  = (uint16)(ADC_value / 4095U);
+	    Rte_write_g_HW_TurbineSpeed(rpm);
+		//return ADC_value;
 }
+
+
+

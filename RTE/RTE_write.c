@@ -44,9 +44,9 @@ void Rte_write_g_HW_BrakeSW(uint8 Brake)
 {
 	Set_g_HW_BrakeSW(Brake);
 }
-void Rte_write_g_HW_InputSpeed(uint16 InSpeed)
+void Rte_write_g_HW_TurbineSpeed(uint16 TbSpeed)
 {
-	Set_g_HW_InputSpeed(InSpeed);
+	Set_g_HW_TurbineSpeed(TbSpeed);
 }
 void Rte_write_g_HW_OutputSpeed(uint16 OutSpeed)
 {
