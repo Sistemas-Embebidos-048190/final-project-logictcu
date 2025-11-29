@@ -20,7 +20,7 @@ void Rte_read_g_CAN_DriveMode(uint8 *Mode);
 void Rte_read_g_CAN_IgnitionStatus(uint8 *IgnStatus);
 void Rte_read_g_HW_LeverPosition(uint8 *LvrPosition);
 void Rte_read_g_HW_BrakeSW(uint8 *Brake);
-void Rte_read_g_HW_InputSpeed(uint16 *InSpeed);
+void Rte_read_g_HW_TurbineSpeed(uint16 *TbSpeed);
 void Rte_read_g_HW_OutputSpeed(uint16 *OutSpeed);
 void Rte_read_g_HW_TransmissionTEMP(sint8 *Temperature);
 

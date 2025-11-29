@@ -63,28 +63,6 @@ static const port_pin_config_t s_gpioPinConfig = {
     kPORT_UnlockRegister
 };
 
-static const port_pin_config_t s_BrakePedal_PinConfig = {
-    /* Internal pull-up/down resistor is disabled */
-	kPORT_PullDown,
-    /* Low internal pull resistor value is selected (not used since pull disabled) */
-    kPORT_LowPullResistor,
-    /* Fast slew rate is configured */
-    kPORT_FastSlewRate,
-    /* Passive input filter is disabled */
-    kPORT_PassiveFilterDisable,
-    /* Open drain output is disabled */
-    kPORT_OpenDrainDisable,
-    /* Low drive strength is configured */
-    kPORT_LowDriveStrength,
-    /* Pin is configured as GPIO */
-	kPORT_MuxAsGpio,
-    /* Digital input enabled */
-    kPORT_InputBufferEnable,
-    /* Digital input is not inverted */
-    kPORT_InputNormal,
-    /* Pin Control Register fields [15:0] are not locked */
-    kPORT_UnlockRegister
-};
 
 /* **********************************************************************
  * Functions
@@ -104,7 +82,7 @@ void Init_Pin_BreakPedal (void)
     /*PIN BREAK PEDAL*/
 
 	/* PORT3_PIN4 is configured as input */
-    PORT_SetPinConfig(PORT3, BREAK_PEDAL_PIN, &s_BrakePedal_PinConfig);
+    PORT_SetPinConfig(PORT3, BREAK_PEDAL_PIN, &s_gpioPinConfig);
 
     gpio_pin_config_t Pin_BreakPedal_config = {
     	kGPIO_DigitalInput,
@@ -255,4 +233,90 @@ void Init_Pin_ShiftLockSolenoid(void)
         GPIO_LOGIC_LEVEL_LOW,
     };
     GPIO_PinInit(GPIO5, LOCK_SOLENOID, &lockSolenoidConfig);
+}
+
+gear_level_possition TCM_read_gear_level_possition(void)
+{
+	uint8 ReadParking = 0;
+	uint8 ReadReverse = 0;
+	uint8 ReadNeutral = 0;
+	uint8 ReadDrive = 0;
+	uint8 ReadFirst = 0;
+	uint8 ReadSecond = 0;
+
+	ReadParking = GPIO_PinRead(GPIO1,  PARKING_PIN);
+	ReadReverse = GPIO_PinRead(GPIO1,  REVERSE_PIN);
+	ReadNeutral = GPIO_PinRead(GPIO3,  NEUTRAL_PIN);
+	ReadDrive = GPIO_PinRead(GPIO2,  DRIVE_PIN);
+	ReadFirst = GPIO_PinRead(GPIO1,  FIRST_PIN);
+	ReadSecond = GPIO_PinRead(GPIO1,  SECOND_PIN);
+
+	if (ReadParking == 1){
+		Rte_write_g_OUT_CurrentGear(PARKING);
+	}
+	if (ReadReverse == 1){
+		Rte_write_g_OUT_CurrentGear(REVERSE);
+	}
+	if (ReadNeutral == 1){
+		Rte_write_g_OUT_CurrentGear(NEUTRAL);
+	}
+	if (ReadDrive == 1){
+		Rte_write_g_OUT_CurrentGear(DRIVE);
+	}
+	if (ReadFirst == 1){
+		Rte_write_g_OUT_CurrentGear(FIRST);
+	}
+	if (ReadSecond == 1){
+		Rte_write_g_OUT_CurrentGear(SECOND);
+	}
+}
+
+pedal_possition TCM_read_pedal_possition(void)
+{
+	uint8 ReadPedal = 0;
+
+	ReadPedal = GPIO_PinRead(GPIO3,  BREAK_PEDAL_PIN);
+
+	if (ReadPedal == 1)
+	{
+		Rte_write_g_HW_BrakeSW(PEDAL_ON);
+	}
+	else if (ReadPedal == 0)
+	{
+		Rte_write_g_HW_BrakeSW(PEDAL_OFF);
+	}
+}
+
+void TCM_set_shift_solenoids(void)
+{
+	uint8 ReadSolenoidA = 0;
+	uint8 ReadSolenoidB = 0;
+	uint8 ReadSolenoidC = 0;
+	uint8 ReadSolenoidD = 0;
+	uint8 ReadSolenoidE = 0;
+
+	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidA);
+	GPIO_PinWrite(GPIO1, SOLENOID_A_PIN, ReadSolenoidA);
+
+	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidB);
+	GPIO_PinWrite(GPIO1, SOLENOID_B_PIN, ReadSolenoidB);
+
+	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidC);
+	GPIO_PinWrite(GPIO1, SOLENOID_C_PIN, ReadSolenoidC);
+
+	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidD);
+	GPIO_PinWrite(GPIO1, SOLENOID_D_PIN, ReadSolenoidD);
+
+	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidE);
+	GPIO_PinWrite(GPIO4, SOLENOID_E_PIN, ReadSolenoidE);
+
+}
+
+void TCM_set_ShiftLock_soenoid (void)
+{
+	uint8 ReadLockSolenoid = 0;
+
+	Rte_read_g_OUT_ShiftLock_Solenoid(&ReadLockSolenoid);
+	GPIO_PinWrite(GPIO5, LOCK_SOLENOID, ReadLockSolenoid);
+
 }

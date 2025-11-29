@@ -26,6 +26,8 @@
 #include "clock_config.h"
 #include "fsl_vref.h"
 #include "fsl_spc.h"
+#include "Platform_Types.h"
+#include "RTE_write.h"
 
 /* **********************************************************************
  * ADC Pin Definitions
@@ -45,10 +47,10 @@
 
 /**
  * @brief ADC pin used for turbine speed sensor.
- *        (P1_10 = ADC1_A10)
+ *        (P0_15 = ADC0_B15)
  *
  */
-#define ADC_TURBINE_SPEED_PIN	(10U)
+#define ADC_TURBINE_SPEED_PIN	(15U)
 
 /* **********************************************************************
  * LPADC Base and Support Modules
@@ -91,7 +93,14 @@
  */
 #define TCM_LPADC_CHANNEL_OUTPUT   (14U) /**< ADC0_B14 → output speed       */
 #define TCM_LPADC_CHANNEL_FLUID    (14U) /**< ADC0_A14 → fluid temperature  */
-#define TCM_LPADC_CHANNEL_TURBINE  (10U) /**< ADC1_A10 → turbine speed      */
+#define TCM_LPADC_CHANNEL_TURBINE  (15U) /**< ADC1_A10 → turbine speed      */
+
+#define TSS_ADC_MAX_COUNTS   4095.0f    // o 65535.0f si usas 16 bits
+#define TSS_MAX_RPM          8000.0f
+
+#define TFT_ADC_MAX_COUNTS_U16   4095U
+#define TFT_MIN_TEMP_x10         (-400)   // -40.0 °C
+#define TFT_SPAN_TEMP_x10        (1900)   // 190.0 °C
 
 /* **********************************************************************
  * API Prototypes
@@ -119,5 +128,5 @@ void TCM_Read_FluidTempSensorRaw(void);
  *        to the application layer (implementation TBD).
  */
 void TCM_Read_TurbineSpeedSensorRaw(void);
-
+void IoHwAb_GetTurbineSpeed_RPM_u16(void);
 #endif /* _IOHWAB_ADC_H_ */

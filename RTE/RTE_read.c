@@ -44,9 +44,9 @@ void Rte_read_g_HW_BrakeSW(uint8 *Brake)
 {
 	*Brake = Get_g_HW_BrakeSW();
 }
-void Rte_read_g_HW_InputSpeed(uint16 *InSpeed)
+void Rte_read_g_HW_TurbineSpeed(uint16 *TbSpeed)
 {
-	 *InSpeed = Get_g_HW_InputSpeed();
+	 *TbSpeed = Get_g_HW_TurbineSpeed();
 }
 void Rte_read_g_HW_OutputSpeed(uint16 *OutSpeed)
 {

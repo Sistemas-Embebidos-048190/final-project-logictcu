@@ -20,7 +20,7 @@ void Set_g_CAN_DriveMode(uint8 Mode);
 void Set_g_CAN_IgnitionStatus(uint8 IgnStatus);
 void Set_g_HW_LeverPosition(uint8 LvrPosition);
 void Set_g_HW_BrakeSW(uint8 Brake);
-void Set_g_HW_InputSpeed(uint16 InSpeed);
+void Set_g_HW_TurbineSpeed(uint16 TbSpeed);
 void Set_g_HW_OutputSpeed(uint16 OutSpeed);
 void Set_g_HW_TransmissionTEMP(sint8 Temperature);
 

@@ -12,6 +12,22 @@
 #include <Platform_Types.h> // Para uint16, uint8
 #include "tcu_types.h" // (Asumiendo que aquí defines GearEnum)
 
+typedef enum
+{
+	PARKING = 1,
+	REVERSE,
+	NEUTRAL,
+	DRIVE,
+	FIRST,
+	SECOND
+}gear_level_possition;
+
+typedef enum
+{
+	PEDAL_OFF = 0,
+	PEDAL_ON
+}pedal_possition;
+
 // --- DECLARACIONES EXTERNAS DE SEÑALES GLOBALES ---
 // "extern" significa: "Esta variable está definida en OTRO archivo.c"
 
@@ -26,9 +42,9 @@ extern uint8 g_CAN_IgnitionStatus;		//Estado de la Ignición
 // Señales de Hardwired (entradas a la TCU)
 extern uint8 g_HW_LeverPosition;  		//Sensor de posición de palanca de velocidad
 extern uint8 g_HW_BrakeSW;				//Sensor de freno
-extern uint16 g_HW_InputSpeed;		//Sensor de velocidad de entrada del eje
-extern uint16 g_HW_OutputSpeed;		//Sensor de velocidad de salida del eje
-extern sint8 g_HW_TransmissionTEMP;    //Sensor de Temperatura
+extern uint16 g_HW_TurbineSpeed;		//Sensor de velocidad de entrada del eje
+extern uint16 g_HW_OutputSpeed;			//Sensor de velocidad de salida del eje
+extern sint8 g_HW_TransmissionTEMP;    	//Sensor de Temperatura
 
 
 // Señales de Salida (controladas por la TCU)
