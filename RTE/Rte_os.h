@@ -13,6 +13,8 @@
 #include "queue.h"
 #include "timers.h"
 
+#include "tcu.h"
+
 void Rte_task_Init();
 static void Rte_task(void *pvParameters);
 static void Rte_Task_logic(void *pvParameters);

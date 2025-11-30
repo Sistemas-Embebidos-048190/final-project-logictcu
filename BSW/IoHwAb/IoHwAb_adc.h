@@ -16,14 +16,11 @@
 /* **********************************************************************
  * Includes
  * *********************************************************************/
-#include "fsl_common.h"
-#include "fsl_port.h"
-#include "pin_mux.h"
-#include "fsl_lpadc.h"
-#include "fsl_debug_console.h"
-#include "board.h"
 #include "app.h"
-#include "clock_config.h"
+#include "fsl_port.h"
+#include "board.h"
+#include "fsl_common.h"
+#include "fsl_lpadc.h"
 #include "fsl_vref.h"
 #include "fsl_spc.h"
 #include "Platform_Types.h"
@@ -59,15 +56,14 @@
 /**
  * @brief LPADC instances used by TCM.
  */
-#define TCM_LPADC0_BASE  	ADC0
-#define TCM_LPADC1_BASE		ADC1
+#define TCM_LPADC_BASE  	ADC0
 
 /**
  * @brief VREF instance used to bias the LPADC.
  * @brief SPC instance used to enable analog modules (including VREF).
  */
 #define DEMO_VREF_BASE 		VREF0
-#define DEMO_SPC_BASE           SPC0
+#define DEMO_SPC_BASE       SPC0
 
 /**
  * @brief Clock divider for ADC functional clock.
@@ -111,6 +107,8 @@
  */
 void Init_ADC_Pins(void);
 
+void TCM_LPADC_InitSensors(void);
+
  /**
   * @brief Acquires the raw output speed sensor ADC sample and forwards it
   *        to the application layer (implementation TBD).
@@ -128,5 +126,4 @@ void TCM_Read_FluidTempSensorRaw(void);
  *        to the application layer (implementation TBD).
  */
 void TCM_Read_TurbineSpeedSensorRaw(void);
-void IoHwAb_GetTurbineSpeed_RPM_u16(void);
 #endif /* _IOHWAB_ADC_H_ */

@@ -18,6 +18,7 @@ sint16 Get_g_CAN_EngineTorque(void);
 uint8 Get_g_CAN_VehicleSpeed(void);
 uint8 Get_g_CAN_DriveMode(void);
 uint8 Get_g_CAN_IgnitionStatus(void);
+uint8 Get_g_HW_LeverPosition(void);
 uint8 Get_g_HW_BrakeSW(void);
 uint16 Get_g_HW_TurbineSpeed(void);
 uint16 Get_g_HW_OutputSpeed(void);

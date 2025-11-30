@@ -12,8 +12,8 @@ void Init_IO_pins (void)
 	Init_Pin_ShiftSolenoids();
 	Init_Pin_ShiftLockSolenoid();
 	Init_ADC_Pins();
+	TCM_LPADC_InitSensors();
 	Init_Pin_PWM();
-
 }
 
 void Update_IO_pins(void)
