@@ -36,10 +36,6 @@ void Rte_write_g_CAN_IgnitionStatus(uint8 IgnStatus)
 {
 	Set_g_CAN_IgnitionStatus(IgnStatus);
 }
-//void Rte_write_g_HW_LeverPosition(uint8 LvrPosition)
-//{
-//	set_g_HW_LeverPosition(LvrPosition);
-//}
 void Rte_write_g_HW_BrakeSW(uint8 Brake)
 {
 	Set_g_HW_BrakeSW(Brake);

@@ -252,36 +252,63 @@ gear_level_possition TCM_read_gear_level_possition(void)
 	ReadSecond = GPIO_PinRead(GPIO1,  SECOND_PIN);
 
 	if (ReadParking == 1){
-		Rte_write_g_OUT_CurrentGear(PARKING);
+		Rte_write_g_HW_LeverPosition(PARKING);
 	}
 	if (ReadReverse == 1){
-		Rte_write_g_OUT_CurrentGear(REVERSE);
+		Rte_write_g_HW_LeverPosition(REVERSE);
 	}
 	if (ReadNeutral == 1){
-		Rte_write_g_OUT_CurrentGear(NEUTRAL);
+		Rte_write_g_HW_LeverPosition(NEUTRAL);
 	}
 	if (ReadDrive == 1){
-		Rte_write_g_OUT_CurrentGear(DRIVE);
+		Rte_write_g_HW_LeverPosition(DRIVE);
 	}
 	if (ReadFirst == 1){
-		Rte_write_g_OUT_CurrentGear(FIRST);
+		Rte_write_g_HW_LeverPosition(FIRST);
 	}
 	if (ReadSecond == 1){
-		Rte_write_g_OUT_CurrentGear(SECOND);
+		Rte_write_g_HW_LeverPosition(SECOND);
 	}
+}
+
+uint16 IoHwAb_DebounceBrakeRaw()
+{
+    /* Leer el pin (0 o 1) */
+    uint8_t current = GPIO_PinRead(GPIO3, BREAK_PEDAL_PIN);
+
+    /* Detectar cambios (0→1 o 1→0) */
+    if (current != lastState)
+    {
+        counter = DEBOUNCE_COUNT;  // reinicia contador
+    }
+    else
+    {
+        if (counter > 0)
+        {
+            counter--;
+        }
+        else
+        {
+            /* Estable → actualiza estado estable */
+            stableState = current;
+        }
+    }
+
+    lastState = current;
+
+    /* Regresa el valor "limpio" */
+    return (bool)stableState;
 }
 
 pedal_possition TCM_read_pedal_possition(void)
 {
-	uint8 ReadPedal = 0;
+	bool brakeRaw = IoHwAb_DebounceBrakeRaw();
 
-	ReadPedal = GPIO_PinRead(GPIO3,  BREAK_PEDAL_PIN);
-
-	if (ReadPedal == 1)
+	if (brakeRaw == 1)
 	{
 		Rte_write_g_HW_BrakeSW(PEDAL_ON);
 	}
-	else if (ReadPedal == 0)
+	else if (brakeRaw == 0)
 	{
 		Rte_write_g_HW_BrakeSW(PEDAL_OFF);
 	}

@@ -79,7 +79,12 @@
 #define LOCK_SOLENOID		(8U)	/**< Shift-lock solenoid */
 /** @} */
 
+/* Variables estáticas del debounce */
+static uint8_t lastState = 0;      // último estado leído del pin, 0 o 1
+static uint8_t stableState = 0;    // estado debounced
+static uint8_t counter = 0;        // contador de estabilidad
 
+#define DEBOUNCE_COUNT   3
 /* **********************************************************************
  * API Prototypes
  * *********************************************************************/
@@ -108,5 +113,6 @@ gear_level_possition TCM_read_gear_level_possition(void);
 pedal_possition TCM_read_pedal_possition(void);
 void TCM_set_shift_solenoids(void);
 void TCM_set_ShiftLock_soenoid (void);
+uint16 IoHwAb_DebounceBrakeRaw();
 
 #endif /* _IOHWAB_GPIO_H_ */
