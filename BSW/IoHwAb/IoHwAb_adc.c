@@ -75,17 +75,15 @@ static const port_pin_config_t adc_PinConfig = {
  * *********************************************************************/
 
 /**
- * @brief Initializes ADC pins, clocks, VREF and LPADC commands/triggers.
+ * @brief Configures pin mux for all ADC input pins.
  *
- * Configures:
- *  - Pins:
- *      - ADC_OUTPUT_SPEED_PIN   (Output speed sensor)
- *      - ADC_TEMPERATURE_PIN    (Fluid temperature sensor)
- *      - ADC_TRUBINE_SPEED_PIN  (Turbine speed sensor)
- *  - Clocks for ADC0 and ADC1
- *  - VREF module (bias for LPADC)
- *  - LPADC0 and LPADC1 common configuration and calibration
- *  - Conversion commands and software triggers for each sensor
+ * Pins:
+ *  - ADC_OUTPUT_SPEED_PIN   : output speed sensor
+ *  - ADC_TEMPERATURE_PIN    : transmission fluid temperature
+ *  - ADC_TURBINE_SPEED_PIN  : turbine speed sensor
+ *
+ * This function only handles the PORT mux; LPADC/VREF/clock are initialized
+ * in @ref TCM_LPADC_InitSensors.
  */
 void Init_ADC_Pins(void)
 {
@@ -97,6 +95,20 @@ void Init_ADC_Pins(void)
     PORT_SetPinConfig(PORT0, ADC_TURBINE_SPEED_PIN, &adc_PinConfig);
 }
 
+/**
+ * @brief Initializes LPADC, VREF, clocks and conversion commands/triggers.
+ *
+ * Steps:
+ *  1) Configure functional clock for ADC (TCM_LPADC_BASE).
+ *  2) Enable and configure VREF (bias current for LPADC).
+ *  3) Configure LPADC common settings and perform calibration.
+ *  4) Configure conversion commands for each sensor:
+ *     - TCM_LPADC_CMDID_OUTPUT  → TCM_LPADC_CHANNEL_OUTPUT
+ *     - TCM_LPADC_CMDID_FLUID   → TCM_LPADC_CHANNEL_FLUID
+ *     - TCM_LPADC_CMDID_TURBINE → TCM_LPADC_CHANNEL_TURBINE
+ *  5) Configure software triggers for each command:
+ *     - TCM_LPADC_TRIG_OUTPUT / FLUID / TURBINE
+ */
 void TCM_LPADC_InitSensors(void)
 {
 	vref_config_t vrefConfig;
@@ -133,7 +145,6 @@ void TCM_LPADC_InitSensors(void)
 	LPADC_Init(TCM_LPADC_BASE, &lpadcConfig);
 	LPADC_DoOffsetCalibration(TCM_LPADC_BASE); /* Request offset calibration, automatic update OFSTRIM register. */
 	LPADC_DoAutoCalibration(TCM_LPADC_BASE);
-
 
 	/* ------------------------------------------------------------------
 	 * 5) Configure conversion commands for each sensor
@@ -174,12 +185,20 @@ void TCM_LPADC_InitSensors(void)
     LPADC_SetConvTriggerConfig(TCM_LPADC_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
 }
 
-
+/**
+ * @brief Reads Output Speed Sensor, converts ADC to RPM, and writes to RTE.
+ *
+ * Conversión usada:
+ *  1) Se obtiene un valor ADC efectivo de 12 bits:
+ *       counts = (convValue >> 3)   → [0 .. 4095]
+ *  2) Se mapea linealmente a 0 .. 8000 RPM:
+ *       rpm = counts / 4095 * 8000
+ */
 void TCM_Read_OutputSpeedSensorRaw(void)
 {
 	lpadc_conv_result_t result;
 	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_OUTPUT);
-	const uint32_t g_LpadcResultShift = 3U;
+	const uint32_t g_LpadcResultShift = TCM_LPADC_RESULT_SHIFT;
 
 	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
 
@@ -187,18 +206,29 @@ void TCM_Read_OutputSpeedSensorRaw(void)
 	{
 	}
 
-	uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * 8000U;   // evitar overflow
-	uint16 rpm  = (uint16)(temp / 4095U);
+	/* Escalado a RPM sin overflow:
+     * rpm = counts / 4095 * 8000
+     */
+	uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * OSS_ADC_MAX_RPM;   // evitar overflow
+	uint16 rpm  = (uint16)(temp / OSS_ADC_MAX_COUNTS);
 
 	Rte_write_g_HW_OutputSpeed( rpm );
 
 }
 
+/**
+ * @brief Reads Transmission Fluid Temperature, converts ADC to °C, and writes to RTE.
+ *
+ * Conversión usada (lineal):
+ *  1) counts = (convValue >> 3)           → [0 .. 4095]
+ *  2) temp_span = counts / 4095 * 190     → [0 .. 190]
+ *  3) temp_C = temp_span + (-40)          → [-40 .. 150]
+ */
 void TCM_Read_FluidTempSensorRaw(void)
 {
 	lpadc_conv_result_t result;
 	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_FLUID);
-	const uint32_t g_LpadcResultShift = 3U;
+	const uint32_t g_LpadcResultShift = TCM_LPADC_RESULT_SHIFT;
 
 	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
 
@@ -206,18 +236,25 @@ void TCM_Read_FluidTempSensorRaw(void)
 	{
 	}
 
-	sint32 temp = (sint32)((result.convValue) >> g_LpadcResultShift) * 190;  // span = 190 °C
-	temp /= 4095;                        // ahora está en [0, 190]
-	temp += -40;                         // desplazar a [-40, 150]
+	sint32 temp = (sint32)((result.convValue) >> g_LpadcResultShift) * TFT_SPAN_TEMP;  // span = 190 °C
+	temp /= TFT_ADC_MAX_COUNTS;                        	// ahora está en [0, 190]
+	temp += TFT_MIN_TEMP;                         		// desplazar a [-40, 150]
 
 	Rte_write_g_HW_TransmissionTEMP( temp );
 }
 
+/**
+ * @brief Reads Turbine Speed Sensor, converts ADC to RPM, and writes to RTE.
+ *
+ * Conversión usada (misma que Output Speed):
+ *  1) counts = (convValue >> 3)           → [0 .. 4095]
+ *  2) rpm    = counts / 4095 * 8000      → [0 .. 8000]
+ */
 void TCM_Read_TurbineSpeedSensorRaw(void)
 {
 		lpadc_conv_result_t result;
 		uint32 triggerMask = (1UL << TCM_LPADC_TRIG_TURBINE);
-		const uint32_t g_LpadcResultShift = 3U;
+		const uint32_t g_LpadcResultShift = TCM_LPADC_RESULT_SHIFT;
 
 		LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
 
@@ -225,8 +262,8 @@ void TCM_Read_TurbineSpeedSensorRaw(void)
 		{
 		}
 
-		uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * 8000U;   // evitar overflow
-		uint16 rpm  = (uint16)(temp / 4095U);
+		uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * TSS_MAX_RPM;   // evitar overflow
+		uint16 rpm  = (uint16)(temp / TSS_ADC_MAX_COUNTS);
 
 		Rte_write_g_HW_TurbineSpeed(rpm);
 }

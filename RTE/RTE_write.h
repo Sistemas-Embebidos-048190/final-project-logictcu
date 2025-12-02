@@ -1,5 +1,12 @@
 /*
- * RTE_write.h
+ * @file    RTE_write.h
+ * @brief   Write-access interface for all RTE signals.
+ *
+ * This file:
+ *  - Declares functions used to update CAN inputs, hardware inputs,
+ *    and TCU output signals through the RTE layer.
+ *  - Wraps the set_signals module to provide a standardized write API.
+ *  - Ensures controlled and consistent modification of global TCM signals.
  *
  *  Created on: Nov 22, 2025
  *      Author: bruno

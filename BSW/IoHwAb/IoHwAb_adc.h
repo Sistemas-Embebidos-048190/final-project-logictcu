@@ -17,9 +17,9 @@
  * Includes
  * *********************************************************************/
 #include "app.h"
-#include "fsl_port.h"
 #include "board.h"
 #include "fsl_common.h"
+#include "fsl_port.h"
 #include "fsl_lpadc.h"
 #include "fsl_vref.h"
 #include "fsl_spc.h"
@@ -91,39 +91,48 @@
 #define TCM_LPADC_CHANNEL_FLUID    (14U) /**< ADC0_A14 → fluid temperature  */
 #define TCM_LPADC_CHANNEL_TURBINE  (15U) /**< ADC1_A10 → turbine speed      */
 
-#define TSS_ADC_MAX_COUNTS   4095.0f    // o 65535.0f si usas 16 bits
-#define TSS_MAX_RPM          8000.0f
+#define TCM_LPADC_RESULT_SHIFT      (3U)
 
-#define TFT_ADC_MAX_COUNTS_U16   4095U
-#define TFT_MIN_TEMP_x10         (-400)   // -40.0 °C
-#define TFT_SPAN_TEMP_x10        (1900)   // 190.0 °C
+/**
+ * @brief Physical range of sensors
+ * */
+#define OSS_ADC_MAX_RPM   	7000U
+#define OSS_ADC_MAX_COUNTS	4095U
+
+#define TSS_ADC_MAX_COUNTS   4095U
+#define TSS_MAX_RPM          8000U
+
+#define TFT_ADC_MAX_COUNTS   4095U
+#define TFT_MIN_TEMP         (-40)   // -40.0 °C
+#define TFT_SPAN_TEMP        (190)   // 190.0 °C
 
 /* **********************************************************************
  * API Prototypes
  * *********************************************************************/
 
 /**
- * @brief Initializes ADC pins, clocks, VREF and LPADC configuration.
+ * @brief Configures pin mux for all ADC input pins.
  */
 void Init_ADC_Pins(void);
 
+/**
+ * @brief Initializes LPADC, VREF, clocks and conversion commands/triggers.
+ */
 void TCM_LPADC_InitSensors(void);
 
- /**
-  * @brief Acquires the raw output speed sensor ADC sample and forwards it
-  *        to the application layer (implementation TBD).
-  */
+/**
+ * @brief Reads Output Speed Sensor, converts ADC to RPM, and writes to RTE.
+ */
 void TCM_Read_OutputSpeedSensorRaw(void);
 
 /**
- * @brief Acquires the raw transmission fluid temperature ADC sample and
- *        forwards it to the application layer (implementation TBD).
+ * @brief Reads Transmission Fluid Temperature, converts ADC to °C, and writes to RTE.
  */
 void TCM_Read_FluidTempSensorRaw(void);
 
 /**
- * @brief Acquires the raw turbine speed sensor ADC sample and forwards it
- *        to the application layer (implementation TBD).
+ * @brief Reads Turbine Speed Sensor, converts ADC to RPM, and writes to RTE.
  */
 void TCM_Read_TurbineSpeedSensorRaw(void);
+
 #endif /* _IOHWAB_ADC_H_ */

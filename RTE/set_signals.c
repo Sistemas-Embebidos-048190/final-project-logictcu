@@ -1,5 +1,12 @@
 /*
- * set_signals.c
+ * @file    set_signals.c
+ * @brief   Implements setter functions for all global TCM signals.
+ *
+ * This file:
+ *  - Provides write operations for CAN inputs, hardware inputs,
+ *    and TCU output signals.
+ *  - Updates the global signal variables defined in global_signals.c.
+ *  - Serves as the low-level write layer used internally by the RTE.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno

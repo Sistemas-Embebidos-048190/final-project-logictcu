@@ -1,5 +1,11 @@
 /*
- * Get_signals.c
+ * @file    Get_signals.c
+ * @brief   Provides getter functions for all global TCM signals.
+ *
+ * This file:
+ *  - Exposes read-only access to CAN, hardware input, and output signals.
+ *  - Centralizes retrieval of all system-wide variables used by the TCU.
+ *  - Prevents direct access to global variables from other modules.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno

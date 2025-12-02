@@ -1,5 +1,12 @@
 /*
- * set_signals.h
+ * @file    set_signals.h
+ * @brief   Write-access declarations for global TCM signal variables.
+ *
+ * This file:
+ *  - Declares setter functions for all CAN inputs, hardware inputs,
+ *    and actuator outputs.
+ *  - Provides the low-level API used by the RTE_write layer to update signals.
+ *  - Ensures controlled modification of the global variables defined in global_signals.c.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno

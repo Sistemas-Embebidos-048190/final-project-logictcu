@@ -1,5 +1,11 @@
 /*
- * RTE_read.h
+ * @file    RTE_read.h
+ * @brief   Read-access interface for all RTE signals.
+ *
+ * This file:
+ *  - Declares functions used to read CAN inputs, hardware inputs, and TCU outputs.
+ *  - Wraps Get_signals.c to provide a standardized RTE-level API.
+ *  - Ensures consistent and safe retrieval of system signals across modules.
  *
  *  Created on: Nov 20, 2025
  *      Author: bruno

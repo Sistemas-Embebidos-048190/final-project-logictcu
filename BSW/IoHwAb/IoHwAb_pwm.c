@@ -39,6 +39,11 @@
  */
 #define IOHWAB_PWM_CHANELS				  (2U)
 
+/**
+ * @brief Maximum allowed duty cycle (in percent).
+ */
+#define IOHWAB_PWM_MAX_DUTY_PERCENT       (100U)
+
 /* **********************************************************************
  * Static pin configuration
  * *********************************************************************/
@@ -180,7 +185,6 @@ void Init_Pin_PWM(void)
     if (PWM_Init(BOARD_PWM_BASEADDR, kPWM_Module_0, &pwmConfig) == kStatus_Fail)
     {
     	PRINTF("PWM initialization failed\n");
-
     }
 
     /* Initialize submodule 1,using submodule 0 clock  */
@@ -236,31 +240,53 @@ void Init_Pin_PWM(void)
     PWM_StartTimer(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2);
 }
 
-
+/**
+ * @brief Updates line pressure PWM duty cycle from RTE command.
+ *
+ * The function:
+ *  - Reads desired duty cycle (0–100 %) from RTE (g_OUT_LinePressure_Control).
+ *  - Saturates the value to [0, IOHWAB_PWM_MAX_DUTY_PERCENT].
+ *  - Updates PWM duty of submodule 0, channel A.
+ */
 void TCM_set_line_pressure(void)
 {
 	uint8 Duty_pressure = 0;
 
 	Rte_read_g_OUT_LinePressure_Control (&Duty_pressure);
 
-	if (Duty_pressure > 100)
+	if (Duty_pressure > IOHWAB_PWM_MAX_DUTY_PERCENT)
 	{
-		Duty_pressure = 100;
+		Duty_pressure = IOHWAB_PWM_MAX_DUTY_PERCENT;
 	}
 
 	PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_SignedCenterAligned, Duty_pressure);
 	PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
 }
 
+/**
+ * @brief Updates TCC control PWM duty cycle from RTE command.
+ *
+ * The function:
+ *  - Reads desired duty cycle from RTE.
+ *  - Saturates to [0, IOHWAB_PWM_MAX_DUTY_PERCENT].
+ *  - Applies a scaling (/2) before writing:
+ *        effectiveDuty = Duty_TCC >> 1
+ *    (i.e. TCC duty is half of the requested value).
+ *  - Updates PWM duty of submodule 1, channel A.
+ *
+ * @note Currently it reads from g_OUT_LinePressure_Control. If a dedicated
+ *       TCC output signal exists in the RTE (e.g. g_OUT_TCC_Control), this
+ *       function should be updated to use that signal instead.
+ */
 void TCM_set_TCC_control(void)
 {
 	uint8 Duty_TCC = 0;
 
 	Rte_read_g_OUT_LinePressure_Control (&Duty_TCC);
 
-	if (Duty_TCC > 100)
+	if (Duty_TCC > IOHWAB_PWM_MAX_DUTY_PERCENT)
 	{
-		Duty_TCC = 100;
+		Duty_TCC = IOHWAB_PWM_MAX_DUTY_PERCENT;
 	}
 
 	PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_1, kPWM_PwmA, kPWM_SignedCenterAligned, (Duty_TCC >> 1));

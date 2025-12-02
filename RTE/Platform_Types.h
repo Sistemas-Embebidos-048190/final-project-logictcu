@@ -1,5 +1,11 @@
 /*
- * Platform_Types.h
+ * @file    Platform_Types.h
+ * @brief   Defines basic platform data types for the TCM project.
+ *
+ * This file:
+ *  - Provides standardized fixed-width integer and boolean types.
+ *  - Ensures consistent type usage across all modules (RTE, IoHwAb, TCU).
+ *  - Acts as the foundational type layer for portability and readability.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno
