@@ -80,7 +80,7 @@ void TCU_step(void)
     TCM_Final_U.Turbine_Speed_Sensor  	= turbineSpeed_rpm;
     TCM_Final_U.Transmission_Fluid_Temp = fluidTemp;
     TCM_Final_U.Output_Speed_Sensor		= outputSpeed_rpm;
-    TCM_Final_U.Vehicle_Speed_Reference = vehicleSpeed_kph;
+    TCM_Final_U.Vehicle_Speed_Reference = outputSpeed_rpm;
     TCM_Final_U.Engine_RPM 				= engineSpeed_rpm;
     TCM_Final_U.Driver_Mode_Selection 	= driveMode;
     TCM_Final_U.Throttle_Position_Sensor= throttlePossition;
@@ -110,11 +110,11 @@ void TCU_step(void)
      * Si en el futuro hay una señal distinta por solenoide en el RTE,
      * aquí se deberá ajustar el mapeo.
      */
-    Rte_write_g_OUT_ShiftSolenoid(solenoidA);
-    Rte_write_g_OUT_ShiftSolenoid(solenoidB);
-    Rte_write_g_OUT_ShiftSolenoid(solenoidC);
-    Rte_write_g_OUT_ShiftSolenoid(solenoidD);
-    Rte_write_g_OUT_ShiftSolenoid(solenoidE);
+    Rte_write_g_OUT_ShiftSolenoidA(solenoidA);
+    Rte_write_g_OUT_ShiftSolenoidB(solenoidB);
+    Rte_write_g_OUT_ShiftSolenoidC(solenoidC);
+    Rte_write_g_OUT_ShiftSolenoidD(solenoidD);
+    Rte_write_g_OUT_ShiftSolenoidE(solenoidE);
 
     Rte_write_g_OUT_CurrentGear(currentGear);
     Rte_write_g_OUT_TCC_ControlSolenoid(solenoidTCC);

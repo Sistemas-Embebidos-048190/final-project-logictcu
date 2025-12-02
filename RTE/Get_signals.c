@@ -57,9 +57,25 @@ sint8 Get_g_HW_TransmissionTEMP(void)
 {
 	return g_HW_TransmissionTEMP;
 }
-uint8 Get_g_OUT_ShiftSolenoid(void)
+uint8 Get_g_OUT_ShiftSolenoidA(void)
 {
-	return g_OUT_ShiftSolenoid;
+	return g_OUT_ShiftSolenoidA;
+}
+uint8 Get_g_OUT_ShiftSolenoidB(void)
+{
+	return g_OUT_ShiftSolenoidB;
+}
+uint8 Get_g_OUT_ShiftSolenoidC(void)
+{
+	return g_OUT_ShiftSolenoidC;
+}
+uint8 Get_g_OUT_ShiftSolenoidD(void)
+{
+	return g_OUT_ShiftSolenoidD;
+}
+uint8 Get_g_OUT_ShiftSolenoidE(void)
+{
+	return g_OUT_ShiftSolenoidE;
 }
 uint8 Get_g_OUT_LinePressure_Control(void)
 {

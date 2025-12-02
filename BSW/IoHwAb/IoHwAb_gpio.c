@@ -366,19 +366,19 @@ void TCM_set_shift_solenoids(void)
 	uint8 ReadSolenoidD = 0;
 	uint8 ReadSolenoidE = 0;
 
-	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidA);
+	Rte_read_g_OUT_ShiftSolenoidA(&ReadSolenoidA);
 	GPIO_PinWrite(GPIO1, SOLENOID_A_PIN, ReadSolenoidA);
 
-	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidB);
+	Rte_read_g_OUT_ShiftSolenoidB(&ReadSolenoidB);
 	GPIO_PinWrite(GPIO1, SOLENOID_B_PIN, ReadSolenoidB);
 
-	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidC);
+	Rte_read_g_OUT_ShiftSolenoidC(&ReadSolenoidC);
 	GPIO_PinWrite(GPIO1, SOLENOID_C_PIN, ReadSolenoidC);
 
-	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidD);
+	Rte_read_g_OUT_ShiftSolenoidD(&ReadSolenoidD);
 	GPIO_PinWrite(GPIO1, SOLENOID_D_PIN, ReadSolenoidD);
 
-	Rte_read_g_OUT_ShiftSolenoid(&ReadSolenoidE);
+	Rte_read_g_OUT_ShiftSolenoidE(&ReadSolenoidE);
 	GPIO_PinWrite(GPIO4, SOLENOID_E_PIN, ReadSolenoidE);
 
 }

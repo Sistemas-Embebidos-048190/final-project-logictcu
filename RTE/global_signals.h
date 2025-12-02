@@ -20,10 +20,10 @@
 
 typedef enum
 {
-	DRIVE  = 1,
-	NEUTRAL,
-	PARKING,
+	PARKING = 0,
 	REVERSE,
+	NEUTRAL,
+	DRIVE,
 	FIRST,
 	SECOND
 }gear_level_possition;
@@ -54,7 +54,11 @@ extern sint8 g_HW_TransmissionTEMP;    	//Sensor de Temperatura
 
 
 // Señales de Salida (controladas por la TCU)
-extern uint8 g_OUT_ShiftSolenoid;			//ON/OFF de los solenoides para la marcha
+extern uint8 g_OUT_ShiftSolenoidA;			//ON/OFF de los solenoides para la marcha
+extern uint8 g_OUT_ShiftSolenoidB;			//ON/OFF de los solenoides para la marcha
+extern uint8 g_OUT_ShiftSolenoidC;			//ON/OFF de los solenoides para la marcha
+extern uint8 g_OUT_ShiftSolenoidD;			//ON/OFF de los solenoides para la marcha
+extern uint8 g_OUT_ShiftSolenoidE;			//ON/OFF de los solenoides para la marcha
 extern uint8 g_OUT_LinePressure_Control;	//PWM que controla la presión general
 extern uint8 g_OUT_TCC_ControlSolenoid;		//PWM que controla la presión de los convertidores
 extern uint8 g_OUT_ShiftLock_Solenoid;		//Permite el cambio de marcha si el pedal del freno esta activo
