@@ -30,8 +30,6 @@
 #include "RTE_write.h"
 #include "RTE_read.h"
 
-
-
 /* **********************************************************************
  * Pin Definitions
  * *********************************************************************/
@@ -89,8 +87,36 @@
  * API Prototypes
  * *********************************************************************/
 static void PWM_DRV_Init3PhPwm(void);
+
+/**
+ * @brief Initializes PWM pins and PWM modules used for:
+ *        - Line pressure control
+ *        - TCC (Torque Converter Clutch) control
+ *
+ * Must be called once during system startup before using
+ * @ref TCM_set_line_pressure or @ref TCM_set_TCC_control.
+ */
 void Init_Pin_PWM(void);
+
+/**
+ * @brief Updates line pressure PWM duty cycle from RTE command.
+ *
+ * Reads the desired duty cycle (0–100 %) from RTE (g_OUT_LinePressure_Control),
+ * applies saturation and updates the PWM duty of:
+ *  - Submodule 0, channel A.
+ */
 void TCM_set_line_pressure(void);
+
+/**
+ * @brief Updates TCC control PWM duty cycle from RTE command.
+ *
+ * Reads the desired duty cycle from RTE (currently g_OUT_LinePressure_Control),
+ * applies saturation and scales it by 1/2 before updating the PWM duty of:
+ *  - Submodule 1, channel A.
+ *
+ * @note If a dedicated TCC output exists in the RTE (e.g. g_OUT_TCC_Control),
+ *       this function should be adapted to use that signal.
+ */
 void TCM_set_TCC_control(void);
 
 #endif /* _IOHWAB_PWM_H_ */

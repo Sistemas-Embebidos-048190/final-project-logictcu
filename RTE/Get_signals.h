@@ -1,5 +1,11 @@
 /*
- * Get_signals.h
+ * @file    Get_signals.h
+ * @brief   Public API for accessing global TCM signals.
+ *
+ * This file:
+ *  - Declares getter functions for all CAN, hardware input, and output signals.
+ *  - Provides a standardized interface for retrieving system-wide variables.
+ *  - Prevents external modules from accessing global variables directly.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno
@@ -31,4 +37,5 @@ uint8 Get_g_OUT_TCC_ControlSolenoid(void);
 uint8 Get_g_OUT_ShiftLock_Solenoid(void);
 uint8 Get_g_OUT_TorqueReduction_Request(void);
 uint8 Get_g_OUT_CurrentGear(void);
+
 #endif /* RTE_GET_SIGNALS_H_ */

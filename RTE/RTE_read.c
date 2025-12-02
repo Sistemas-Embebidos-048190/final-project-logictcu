@@ -1,5 +1,12 @@
 /*
- * RTE_read.c
+ * @file    RTE_read.c
+ * @brief   Implements RTE read-access functions for all system signals.
+ *
+ * This file:
+ *  - Provides wrapper functions that return CAN inputs, hardware inputs,
+ *    and TCU outputs through pointer-based read operations.
+ *  - Bridges the Get_signals layer with higher-level software modules.
+ *  - Ensures consistent retrieval of all global signals in the RTE architecture.
  *
  *  Created on: Nov 20, 2025
  *      Author: bruno

@@ -1,10 +1,17 @@
 /*
- * global_signals.c
+ * @file    global_signals.c
+ * @brief   Defines all global TCM signal variables used across the system.
+ *
+ * This file:
+ *  - Allocates storage for every global input and output signal declared in global_signals.h.
+ *  - Initializes CAN inputs, hardware inputs, and actuator outputs to default values.
+ *  - Serves as the central data container for the TCU runtime environment.
  *
  *  Created on: Nov 11, 2025
  *      Author: bruno
  */
 #include "global_signals.h" // Incluimos su propio.h por consistencia
+
 // --- DEFINICIONES DE SEÑALES GLOBALES ---
 
 // Señales de CAN (entradas a la TCU)
@@ -24,9 +31,9 @@ sint8 g_HW_TransmissionTEMP = 0;    //Sensor de Temperatura
 
 
 // Señales de Salida (controladas por la TCU)
-uint8 g_OUT_ShiftSolenoid = 0;			//ON/OFF de los solenoides para la marcha
-uint8 g_OUT_LinePressure_Control = 0;	//PWM que controla la presión general
-uint8 g_OUT_TCC_ControlSolenoid = 0;	//PWM que controla la presión de los convertidores
-uint8 g_OUT_ShiftLock_Solenoid = 0;		//Permite el cambio de marcha si el pedal del freno esta activo
-uint8 g_OUT_TorqueReduction_Request = 0; //Reduce temporalmente el giro del motor
-uint8 g_OUT_CurrentGear = 0;			//Muestra la marcha actual en el cluster
+uint8 g_OUT_ShiftSolenoid = 0;				//ON/OFF de los solenoides para la marcha
+uint8 g_OUT_LinePressure_Control = 0;		//PWM que controla la presión general
+uint8 g_OUT_TCC_ControlSolenoid = 0;		//PWM que controla la presión de los convertidores
+uint8 g_OUT_ShiftLock_Solenoid = 0;			//Permite el cambio de marcha si el pedal del freno esta activo
+uint8 g_OUT_TorqueReduction_Request = 0; 	//Reduce temporalmente el giro del motor
+uint8 g_OUT_CurrentGear = 0;				//Muestra la marcha actual en el cluster

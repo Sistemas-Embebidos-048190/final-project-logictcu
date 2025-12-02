@@ -1,5 +1,12 @@
 /*
- * RTE_write.c
+ * @file    RTE_write.c
+ * @brief   Implements RTE write-access functions for all system signals.
+ *
+ * This file:
+ *  - Provides wrapper functions to update CAN inputs, hardware inputs,
+ *    and TCU output signals through the RTE interface.
+ *  - Bridges higher-level software with the global signal storage.
+ *  - Ensures controlled and consistent modification of all TCM signals.
  *
  *  Created on: Nov 22, 2025
  *      Author: bruno

@@ -20,12 +20,7 @@
 /* **********************************************************************
  * Includes
  * *********************************************************************/
-#include "board.h"
-#include "fsl_debug_console.h"
-#include "fsl_gpio.h"
-#include "app.h"
 #include "IoHwAb_gpio.h"
-
 
 /* **********************************************************************
  * Definitions
@@ -36,6 +31,10 @@
  */
 #define GPIO_LOGIC_LEVEL_LOW   (0u)
 
+/**
+ * @brief Logic level considered as active/high for inputs.
+ */
+#define GPIO_LOGIC_LEVEL_HIGH   (1u)
 
 /* **********************************************************************
  * Static configuration structures
@@ -112,7 +111,7 @@ void Init_Pin_GearPossition(void)
     PORT_SetPinConfig(PORT3, NEUTRAL_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT2, DRIVE_PIN, &s_gpioPinConfig);
     PORT_SetPinConfig(PORT1, FIRST_PIN, &s_gpioPinConfig);
-    PORT_SetPinConfig(PORT1, SECOND_PIN, &s_gpioPinConfig);
+    //PORT_SetPinConfig(PORT1, SECOND_PIN, &s_gpioPinConfig);
 
     /* --- GPIO configuration as digital inputs --- */
 
@@ -146,11 +145,11 @@ void Init_Pin_GearPossition(void)
     };
     GPIO_PinInit(GPIO1, FIRST_PIN, &firstConfig);
 
-    gpio_pin_config_t secondConfig = {
-        kGPIO_DigitalInput,
-        GPIO_LOGIC_LEVEL_LOW,
-    };
-    GPIO_PinInit(GPIO1, SECOND_PIN, &secondConfig);
+//    gpio_pin_config_t secondConfig = {
+//        kGPIO_DigitalInput,
+//        GPIO_LOGIC_LEVEL_LOW,
+//    };
+//    GPIO_PinInit(GPIO1, SECOND_PIN, &secondConfig);
 }
 
 /**
@@ -235,6 +234,19 @@ void Init_Pin_ShiftLockSolenoid(void)
     GPIO_PinInit(GPIO5, LOCK_SOLENOID, &lockSolenoidConfig);
 }
 
+/**
+ * @brief Reads gear lever position inputs and updates the corresponding RTE signal.
+ *
+ * The function:
+ *  - Samples all discrete inputs for lever positions.
+ *  - Determines the current lever position based on active input.
+ *  - Writes the resulting position to RTE (g_HW_LeverPosition).
+ *
+ * @return The resolved gear_level_possition value.
+ *
+ * @note If more than one input is active simultaneously, the first
+ *       matching condition in the sequence P → R → N → D → 1 → 2 wins.
+ */
 gear_level_possition TCM_read_gear_level_possition(void)
 {
 	uint8 ReadParking = 0;
@@ -249,28 +261,39 @@ gear_level_possition TCM_read_gear_level_possition(void)
 	ReadNeutral = GPIO_PinRead(GPIO3,  NEUTRAL_PIN);
 	ReadDrive = GPIO_PinRead(GPIO2,  DRIVE_PIN);
 	ReadFirst = GPIO_PinRead(GPIO1,  FIRST_PIN);
-	ReadSecond = GPIO_PinRead(GPIO1,  SECOND_PIN);
+	//ReadSecond = GPIO_PinRead(GPIO1,  SECOND_PIN);
 
-	if (ReadParking == 1){
+	if (ReadParking == GPIO_LOGIC_LEVEL_HIGH){
 		Rte_write_g_HW_LeverPosition(PARKING);
 	}
-	if (ReadReverse == 1){
+	else if (ReadReverse == GPIO_LOGIC_LEVEL_HIGH){
 		Rte_write_g_HW_LeverPosition(REVERSE);
 	}
-	if (ReadNeutral == 1){
+	else if (ReadNeutral == GPIO_LOGIC_LEVEL_HIGH){
 		Rte_write_g_HW_LeverPosition(NEUTRAL);
 	}
-	if (ReadDrive == 1){
+	else if (ReadDrive == GPIO_LOGIC_LEVEL_HIGH){
 		Rte_write_g_HW_LeverPosition(DRIVE);
 	}
-	if (ReadFirst == 1){
+	else if (ReadFirst == GPIO_LOGIC_LEVEL_HIGH){
 		Rte_write_g_HW_LeverPosition(FIRST);
 	}
-	if (ReadSecond == 1){
-		Rte_write_g_HW_LeverPosition(SECOND);
-	}
+//	else if (ReadSecond == GPIO_LOGIC_LEVEL_HIGH){
+//	Rte_write_g_HW_LeverPosition(SECOND);
+//	}
 }
 
+/**
+ * @brief Debounces the raw brake pedal input.
+ *
+ * Implements a simple time-based debounce:
+ *  - If current sample differs from last sample, the debounce counter is
+ *    reloaded.
+ *  - If samples are equal, the counter is decremented down to 0.
+ *  - When the counter reaches 0, the stable state is updated.
+ *
+ * @return Debounced brake pedal state (0 = released, 1 = pressed).
+ */
 uint16 IoHwAb_DebounceBrakeRaw()
 {
     /* Leer el pin (0 o 1) */
@@ -300,20 +323,41 @@ uint16 IoHwAb_DebounceBrakeRaw()
     return (bool)stableState;
 }
 
+/**
+ * @brief Reads the debounced brake pedal state and updates the RTE signal.
+ *
+ * This function:
+ *  - Calls @ref IoHwAb_DebounceBrakeRaw to obtain a stable state.
+ *  - Maps the boolean state to PEDAL_ON / PEDAL_OFF.
+ *  - Writes the pedal position to RTE (g_HW_BrakeSW).
+ *
+ * @return Resolved pedal_possition value.
+ */
 pedal_possition TCM_read_pedal_possition(void)
 {
 	bool brakeRaw = IoHwAb_DebounceBrakeRaw();
 
-	if (brakeRaw == 1)
+	if (brakeRaw == GPIO_LOGIC_LEVEL_HIGH)
 	{
 		Rte_write_g_HW_BrakeSW(PEDAL_ON);
 	}
-	else if (brakeRaw == 0)
+	else if (brakeRaw == GPIO_LOGIC_LEVEL_LOW)
 	{
 		Rte_write_g_HW_BrakeSW(PEDAL_OFF);
 	}
 }
 
+/**
+ * @brief Updates shift solenoid outputs from RTE commands.
+ *
+ * The function:
+ *  - Reads desired states from RTE (g_OUT_ShiftSolenoid).
+ *  - Drives GPIO outputs for solenoids A, B, C, D, E accordingly.
+ *
+ * @note Actualmente se usa la misma señal de RTE (g_OUT_ShiftSolenoid)
+ *       para todos los solenoides. Si en el futuro hay una señal distinta
+ *       por solenoide, este mapeo deberá actualizarse.
+ */
 void TCM_set_shift_solenoids(void)
 {
 	uint8 ReadSolenoidA = 0;
@@ -339,6 +383,13 @@ void TCM_set_shift_solenoids(void)
 
 }
 
+/**
+ * @brief Updates the shift-lock solenoid output from RTE command.
+ *
+ * This function:
+ *  - Reads the desired lock solenoid state from RTE (g_OUT_ShiftLock_Solenoid).
+ *  - Drives the LOCK_SOLENOID GPIO output accordingly.
+ */
 void TCM_set_ShiftLock_soenoid (void)
 {
 	uint8 ReadLockSolenoid = 0;
