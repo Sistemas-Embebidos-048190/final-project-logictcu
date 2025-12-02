@@ -32,7 +32,11 @@ void Set_g_HW_OutputSpeed(uint16 OutSpeed);
 void Set_g_HW_TransmissionTEMP(sint8 Temperature);
 
 //Outputs
-void Set_g_OUT_ShiftSolenoid(uint8 ShiftSol);
+void Set_g_OUT_ShiftSolenoidA(uint8 ShiftSol);
+void Set_g_OUT_ShiftSolenoidB(uint8 ShiftSol);
+void Set_g_OUT_ShiftSolenoidC(uint8 ShiftSol);
+void Set_g_OUT_ShiftSolenoidD(uint8 ShiftSol);
+void Set_g_OUT_ShiftSolenoidE(uint8 ShiftSol);
 void Set_g_OUT_LinePressure_Control(uint8 Pressure);
 void Set_g_OUT_TCC_ControlSolenoid(uint8 CntrlSol);
 void Set_g_OUT_ShiftLock_Solenoid(uint8 ShiftLock);

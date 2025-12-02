@@ -58,9 +58,25 @@ void Set_g_HW_TransmissionTEMP(sint8 Temperature)
 {
 	g_HW_TransmissionTEMP = Temperature;
 }
-void Set_g_OUT_ShiftSolenoid(uint8 ShiftSol)
+void Set_g_OUT_ShiftSolenoidA(uint8 ShiftSol)
 {
-	g_OUT_ShiftSolenoid = ShiftSol;
+	g_OUT_ShiftSolenoidA = ShiftSol;
+}
+void Set_g_OUT_ShiftSolenoidB(uint8 ShiftSol)
+{
+	g_OUT_ShiftSolenoidB = ShiftSol;
+}
+void Set_g_OUT_ShiftSolenoidC(uint8 ShiftSol)
+{
+	g_OUT_ShiftSolenoidC = ShiftSol;
+}
+void Set_g_OUT_ShiftSolenoidD(uint8 ShiftSol)
+{
+	g_OUT_ShiftSolenoidD = ShiftSol;
+}
+void Set_g_OUT_ShiftSolenoidE(uint8 ShiftSol)
+{
+	g_OUT_ShiftSolenoidE = ShiftSol;
 }
 void Set_g_OUT_LinePressure_Control(uint8 Pressure)
 {

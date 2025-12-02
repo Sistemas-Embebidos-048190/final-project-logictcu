@@ -59,9 +59,25 @@ void Rte_read_g_HW_TransmissionTEMP(sint8 *Temperature)
 {
 	 *Temperature = Get_g_HW_TransmissionTEMP();
 }
-void Rte_read_g_OUT_ShiftSolenoid(uint8 *ShiftSol)
+void Rte_read_g_OUT_ShiftSolenoidA(uint8 *ShiftSol)
 {
-	 *ShiftSol = Get_g_OUT_ShiftSolenoid();
+	 *ShiftSol = Get_g_OUT_ShiftSolenoidA();
+}
+void Rte_read_g_OUT_ShiftSolenoidB(uint8 *ShiftSol)
+{
+	 *ShiftSol = Get_g_OUT_ShiftSolenoidB();
+}
+void Rte_read_g_OUT_ShiftSolenoidC(uint8 *ShiftSol)
+{
+	 *ShiftSol = Get_g_OUT_ShiftSolenoidC();
+}
+void Rte_read_g_OUT_ShiftSolenoidD(uint8 *ShiftSol)
+{
+	 *ShiftSol = Get_g_OUT_ShiftSolenoidD();
+}
+void Rte_read_g_OUT_ShiftSolenoidE(uint8 *ShiftSol)
+{
+	 *ShiftSol = Get_g_OUT_ShiftSolenoidE();
 }
 void Rte_read_g_OUT_LinePressure_Control(uint8 *Pressure)
 {

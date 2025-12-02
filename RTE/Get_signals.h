@@ -31,7 +31,11 @@ uint16 Get_g_HW_OutputSpeed(void);
 sint8 Get_g_HW_TransmissionTEMP(void);
 
 //Outputs
-uint8 Get_g_OUT_ShiftSolenoid(void);
+uint8 Get_g_OUT_ShiftSolenoidA(void);
+uint8 Get_g_OUT_ShiftSolenoidB(void);
+uint8 Get_g_OUT_ShiftSolenoidC(void);
+uint8 Get_g_OUT_ShiftSolenoidD(void);
+uint8 Get_g_OUT_ShiftSolenoidE(void);
 uint8 Get_g_OUT_LinePressure_Control(void);
 uint8 Get_g_OUT_TCC_ControlSolenoid(void);
 uint8 Get_g_OUT_ShiftLock_Solenoid(void);
